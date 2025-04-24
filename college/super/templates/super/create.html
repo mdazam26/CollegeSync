@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>create user</title>
+  </head>
+  <body>
+    <h1>Welcom to College Sync</h1>
+    <h2>User creation</h2>
+
+    <form action="{% url 'create' %}" method="post">
+      {% csrf_token %} {{ form.as_p }}
+      <!-- <label for="institute_name">Institute Name:- </label> 
+        <input type="text" name="institute_name" id="">
+        <br><br>
+
+        <label for="institute_address">Institute Address:- </label>
+        <textarea name="institute_address" id=""></textarea>
+        <br><br>
+
+        <label for="institute_email">Institute Email:- </label>
+        <input type="text" name="institute_email" id="">
+        <br><br>
+
+        <label for="institue_number">Institute Phone number:- </label>
+        <input type="text" name="institue_number" id="">
+        <br><br>
+
+
+        <label for="admin_name">Admin Name:- </label>
+        <input type="text" name="admin_name" id="">
+        <br><br>
+
+        <label for="admin_number">Admin Mobile number:- </label>
+        <input type="text" name="admin_number" id="">
+        <br><br>
+
+        <label for="admin_email">Admin Email:- </label>
+        <input type="text" name="admin_email" id="">
+        <br><br>
+
+        <label for="admin_username">Username:- </label>
+        <input type="text" name="admin_username">
+
+        <label for="admin_password">Password:- </label>
+        <input type="password" name="admin_password" id="">
+        <br><br>
+
+        <label for="confirm_password">Confirm Password:- </label>
+        <input type="password" name="confirm_password" id="">
+        <br><br> -->
+
+      <button type="submit">SUBMIT</button>
+    </form>
+
+    {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </body>
+</html>
