@@ -28,10 +28,13 @@ def create(request):
         confirm_password = request.POST.get('confirm_password')
 
         if(College.objects.filter(admin_username = admin_username).exists()):
-            return HttpResponse("Username already exits")
+            messages.error(request, 'Username already exits!')
+
+            return redirect('open_create')
 
         if admin_password != confirm_password:
-            return HttpResponse("Password do not match")
+            messages.error(request, 'Password do not match')
+            return redirect('open_create')
 
         College.objects.create(
             institute_name = institute_name,
@@ -43,7 +46,7 @@ def create(request):
             admin_number = admin_number,
             admin_email = admin_email,
             admin_username = admin_username,
-            admin_password = admin_password,
+            admin_password = make_password(admin_password) ,
         )
 
         messages.success(request, "College created successfully!")  # Add a success message

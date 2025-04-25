@@ -16,7 +16,7 @@ class College(models.Model):
     admin_number = models.CharField(max_length=15, null=True, blank=True)
     admin_email = models.EmailField(null=True, blank=True)
     admin_username = models.CharField(max_length=11, unique=True)
-    admin_password = models.CharField(max_length=20)
+    admin_password = models.CharField(max_length=150)
 
 
 def __str__(self):

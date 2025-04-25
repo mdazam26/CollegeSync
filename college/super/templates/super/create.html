@@ -9,6 +9,7 @@
     <h1>Welcom to College Sync</h1>
     <h2>User creation</h2>
 
+
     <form action="{% url 'create' %}" method="post">
       {% csrf_token %}
       <label for="institute_name">Institute Name:- </label>
@@ -20,11 +21,11 @@
       <br /><br />
 
       <label for="institute_email">Institute Email:- </label>
-      <input type="text" name="institute_email" id="" />
+      <input type="email" name="institute_email" id="" />
       <br /><br />
 
-      <label for="institue_number">Institute Phone number:- </label>
-      <input type="text" name="institue_number" id="" />
+      <label for="institute_number">Institute Phone number:- </label>
+      <input type="text" name="institute_number" id="" />
       <br /><br />
 
       <label for="admin_name">Admin Name:- </label>
@@ -36,7 +37,7 @@
       <br /><br />
 
       <label for="admin_email">Admin Email:- </label>
-      <input type="text" name="admin_email" id="" />
+      <input type="email" name="admin_email" id="" />
       <br /><br />
 
       <label for="admin_username">Username:- </label>
