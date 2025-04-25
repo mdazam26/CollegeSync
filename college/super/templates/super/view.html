@@ -1,11 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>this is view page</h1>
-</body>
+    <h1>List of Colleges</h1>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Institute Name</th>
+          <th>Institute Address</th>
+          <th>Institute Email</th>
+          <th>Institute Number</th>
+          <th>Admin Name</th>
+          <th>Admin Number</th>
+          <th>Admin Email</th>
+          <th>Admin Username</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for college in colleges %}
+        <tr>
+          <td>{{ college.institute_name }}</td>
+          <td>{{ college.institute_address }}</td>
+          <td>{{ college.institute_email }}</td>
+          <td>{{ college.institute_number }}</td>
+          <td>{{ college.admin_name }}</td>
+          <td>{{ college.admin_number }}</td>
+          <td>{{ college.admin_email }}</td>
+          <td>{{ college.admin_username }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
 </html>
