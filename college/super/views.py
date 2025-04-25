@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,  get_object_or_404
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponse
 from .models import College
@@ -80,5 +80,42 @@ def view(request):
     colleges = College.objects.all()
     return render(request, 'super/view.html', {'colleges': colleges})
 
-def manage(request):
-    return render(request, 'super/manage.html')
+def manage(request, college_id):
+    # Retrieve the college object from the database
+    college = get_object_or_404(College, id=college_id)
+
+    if request.method == 'POST':
+        # Get the form data from the request
+        institute_name = request.POST.get('institute_name')
+        institute_address = request.POST.get('institute_address')
+        institute_email = request.POST.get('institute_email')
+        institute_number = request.POST.get('institute_number')
+        admin_name = request.POST.get('admin_name')
+        admin_number = request.POST.get('admin_number')
+        admin_email = request.POST.get('admin_email')
+        admin_username = request.POST.get('admin_username')
+
+        # Update the college object with the new data
+        college.institute_name = institute_name
+        college.institute_address = institute_address
+        college.institute_email = institute_email
+        college.institute_number = institute_number
+        college.admin_name = admin_name
+        college.admin_number = admin_number
+        college.admin_email = admin_email
+        college.admin_username = admin_username
+
+        # Save the updated college object back to the database
+        college.save()
+
+        # Display a success message
+        messages.success(request, 'College details updated successfully.')
+
+        # Redirect to the 'view' page or wherever you'd like
+        return redirect('view')
+
+    return render(request, 'super/manage.html', {'college': college})
+
+def manage_college(request, college_id):
+    college = get_object_or_404(College, id=college_id)
+    return render(request, 'super/manage.html', {'college': college})

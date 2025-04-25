@@ -11,5 +11,8 @@ urlpatterns = [
     path('open_create/', views.open_create, name='open_create'),
 
     path('view/',views.view, name='view'),
-    path('manage/', views.manage, name='manage'),
+
+    path('manage/<int:college_id>/', views.manage, name='manage'),
+    path('manage_college/<int:college_id>/', views.manage_college, name='manage_college'),
+
 ]

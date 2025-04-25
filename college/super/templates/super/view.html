@@ -19,6 +19,7 @@
           <th>Admin Number</th>
           <th>Admin Email</th>
           <th>Admin Username</th>
+          <th>Manage</th>
         </tr>
       </thead>
       <tbody>
@@ -32,9 +33,21 @@
           <td>{{ college.admin_number }}</td>
           <td>{{ college.admin_email }}</td>
           <td>{{ college.admin_username }}</td>
+
+          <td>
+            <a href="{% url 'manage_college' college.id %}">Manage</a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+
+    {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
   </body>
 </html>
