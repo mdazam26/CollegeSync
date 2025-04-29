@@ -19,5 +19,5 @@ class College(models.Model):
     admin_password = models.CharField(max_length=150)
 
 
-def __str__(self):
-    return f"{self.institute_name} ({self.admin_name} - {self.admin_number}) "
+    def __str__(self):
+        return f"{self.institute_name} ({self.admin_name} - {self.admin_number}) "
