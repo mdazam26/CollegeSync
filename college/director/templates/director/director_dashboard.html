@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        width: 80%;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f4f4f4;
+        border-radius: 8px;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .dashboard-buttons {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+      }
+      .button {
+        background-color: #4caf50;
+        color: white;
+        padding: 15px 32px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        border-radius: 8px;
+        text-align: center;
+        width: 150px;
+      }
+      .button:hover {
+        background-color: #45a049;
+      }
+      .logout-button {
+        background-color: red;
+        color: white;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>welcome to DIRECTOR DASHBOARD</h1>
+
+    <div class="container">
+      <div class="header">
+        <h1>Welcome to Director Dashboard</h1>
+        <h3>
+          Hello, {{ director.admin_name }}! You can manage your college system
+          here.
+        </h3>
+      </div>
+
+      <!-- Action buttons for different management tasks -->
+      <div class="dashboard-buttons">
+        <a href="{% url 'create_hod' %}" class="button">Create HOD</a>
+        <a href="{% url 'manage_hod' %}" class="button">Manage HODs</a>
+        <a href="{% url 'create_batch' %}" class="button">Create Batch</a>
+        <a href="{% url 'manage_batch' %}" class="button">Manage Batches</a>
+        <a href="{% url 'create_branch' %}" class="button">Create Branch</a>
+        <a href="{% url 'manage_branch' %}" class="button">Manage Branches</a>
+      </div>
+
+      <!-- Logout button -->
+      <div style="text-align: center; margin-top: 30px">
+        <a href="{% url 'director_logout' %}" class="button logout-button">Logout</a>
+      </div>
+    </div>
+  </body>
+</html>
