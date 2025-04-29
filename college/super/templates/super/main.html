@@ -3,51 +3,62 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Main</title>
+    <title>College Sync | SuperUser</title>
     <style>
-      .outer-box {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        background-color: lightgray;
-        justify-content: center;
-        align-items: center;
-      }
-      .box {
-        height: 50dvh;
-        width: 50dvh;
-        background-color: lightsalmon;
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f1f3f8;
         display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
-        gap: 20px;
+        justify-content: center;
+        height: 100vh;
       }
-      .button a {
-        padding: 10px 20px;
-        background-color: #007bff;
+
+      h1 {
+        margin-bottom: 40px;
+        color: #2c3e50;
+      }
+
+      .card {
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 25px;
+      }
+
+      .button-link {
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+        padding: 15px 0;
+        background-color: #4caf50;
         color: white;
         text-decoration: none;
-        border-radius: 5px;
+        border-radius: 8px;
+        font-size: 16px;
         font-weight: bold;
+        transition: background-color 0.3s ease;
       }
-      .button a:hover {
-        background-color: #0056b3;
+
+      .button-link:hover {
+        background-color: #43a047;
       }
     </style>
   </head>
   <body>
-    <h1>Welcome to College Sync SuperUser page</h1>
+    <h1>Welcome to College Sync SuperUser Page</h1>
 
-    <div class="outer-box">
-      <div class="box">
-        <div class="button">
-          <button><a href="open_create">CREATE USER</a></button>
-        </div>
-        <div class="button">
-          <button><a href="view">View USER</a></button>
-        </div>
-      </div>
+    <div class="card">
+      <a href="{% url 'open_create' %}" class="button-link">Create User</a>
+      <a href="{% url 'view' %}" class="button-link">View Users</a>
     </div>
   </body>
 </html>

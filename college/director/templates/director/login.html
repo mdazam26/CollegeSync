@@ -3,31 +3,111 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Director Login</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f1f3f8;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 400px;
+        margin: 100px auto;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: bold;
+        color: #444;
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+      }
+
+      input[type="text"]:focus,
+      input[type="password"]:focus {
+        outline: none;
+        border-color: #4caf50;
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .messages {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      .messages ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .messages li {
+        color: red;
+        font-weight: bold;
+      }
+    </style>
   </head>
   <body>
-    <h1>login from director</h1>
+    <div class="container">
+      <h1>Login - Director</h1>
 
-    <form action="{% url 'director_login' %}" method="post">
-      {% csrf_token %}
+      <form action="{% url 'director_login' %}" method="post">
+        {% csrf_token %}
+        <label for="username">Username</label>
+        <input type="text" name="username" required />
 
-      <label for="username">Username</label>
-      <input type="text" name="username" required />
-      <br /><br />
+        <label for="password">Password</label>
+        <input type="password" name="password" required />
 
-      <label for="password">Password</label>
-      <input type="password" name="password" id="" required />
-      <br /><br />
+        <button type="submit">SUBMIT</button>
+      </form>
 
-      <button type="submit">SUBMIT</button>
-    </form>
-
-    {% if messages %}
-    <ul>
-      {% for message in messages %}
-      <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
+      <div class="messages">
+        {% if messages %}
+        <ul>
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </div>
   </body>
 </html>

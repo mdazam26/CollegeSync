@@ -3,64 +3,135 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>create user</title>
+    <title>Create User | College Sync</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f1f3f8;
+        color: #333;
+      }
+
+      .container {
+        max-width: 700px;
+        margin: 50px auto;
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      }
+
+      h1,
+      h2 {
+        text-align: center;
+        color: #2c3e50;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 30px;
+      }
+
+      label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
+        color: #444;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="password"],
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+        resize: vertical;
+      }
+
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 14px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .messages {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      .messages ul {
+        list-style: none;
+        padding: 0;
+        color: red;
+        font-weight: bold;
+      }
+    </style>
   </head>
   <body>
-    <h1>Welcom to College Sync</h1>
-    <h2>User creation</h2>
+    <div class="container">
+      <h1>Welcome to College Sync</h1>
+      <h2>User Creation</h2>
 
+      <form action="{% url 'create' %}" method="post">
+        {% csrf_token %}
 
-    <form action="{% url 'create' %}" method="post">
-      {% csrf_token %}
-      <label for="institute_name">Institute Name:- </label>
-      <input type="text" name="institute_name" id="" required />
-      <br /><br />
+        <label for="institute_name">Institute Name</label>
+        <input type="text" name="institute_name" required />
 
-      <label for="institute_address">Institute Address:- </label>
-      <textarea name="institute_address" id=""></textarea>
-      <br /><br />
+        <label for="institute_address">Institute Address</label>
+        <textarea name="institute_address" rows="3" required></textarea>
 
-      <label for="institute_email">Institute Email:- </label>
-      <input type="email" name="institute_email" id="" />
-      <br /><br />
+        <label for="institute_email">Institute Email</label>
+        <input type="email" name="institute_email" />
 
-      <label for="institute_number">Institute Phone number:- </label>
-      <input type="text" name="institute_number" id="" />
-      <br /><br />
+        <label for="institute_number">Institute Phone Number</label>
+        <input type="text" name="institute_number" />
 
-      <label for="admin_name">Admin Name:- </label>
-      <input type="text" name="admin_name" id="" required />
-      <br /><br />
+        <label for="admin_name">Admin Name</label>
+        <input type="text" name="admin_name" required />
 
-      <label for="admin_number">Admin Mobile number:- </label>
-      <input type="text" name="admin_number" id="" />
-      <br /><br />
+        <label for="admin_number">Admin Mobile Number</label>
+        <input type="text" name="admin_number" />
 
-      <label for="admin_email">Admin Email:- </label>
-      <input type="email" name="admin_email" id="" />
-      <br /><br />
+        <label for="admin_email">Admin Email</label>
+        <input type="email" name="admin_email" />
 
-      <label for="admin_username">Username:- </label>
-      <input type="text" name="admin_username" required />
-      <br /><br />
+        <label for="admin_username">Username</label>
+        <input type="text" name="admin_username" required />
 
-      <label for="admin_password">Password:- </label>
-      <input type="password" name="admin_password" id="" required />
-      <br /><br />
+        <label for="admin_password">Password</label>
+        <input type="password" name="admin_password" required />
 
-      <label for="confirm_password">Confirm Password:- </label>
-      <input type="password" name="confirm_password" id="" required />
-      <br /><br />
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" name="confirm_password" required />
 
-      <button type="submit">SUBMIT</button>
-    </form>
+        <button type="submit">Submit</button>
+      </form>
 
-    {% if messages %}
-    <ul>
-      {% for message in messages %}
-      <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
+      <div class="messages">
+        {% if messages %}
+        <ul>
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </div>
   </body>
 </html>

@@ -119,3 +119,9 @@ def manage(request, college_id):
 def manage_college(request, college_id):
     college = get_object_or_404(College, id=college_id)
     return render(request, 'super/manage.html', {'college': college})
+
+def delete_college(request, college_id):
+    college = get_object_or_404(College, id=college_id)
+    college.delete()
+    messages.success(request, "College deleted successfully.")
+    return redirect('view')  # or your view page's URL name

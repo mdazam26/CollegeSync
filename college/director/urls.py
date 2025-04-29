@@ -16,12 +16,21 @@ urlpatterns = [
 
     path('create_hod/', views.create_hod, name='create_hod'),
     path('manage_hod/', views.manage_hod, name='manage_hod'),
+    path('view_hod/', views.view_hod, name='view_hod'),
 
-    path('create_batch/', views.create_batch, name='create_batch'),
-    path('manage_batch/', views.manage_batch, name='manage_batch'),
+
+    path('create_batch_form/', views.create_batch_form, name='create_batch_form'),
+    path('create_batch/', views.create_batch, name='create_batch'), 
+    path('view_batch/', views.view_batch, name='view_batch'),
+    path('goto_manage_batch/<int:batch_id>', views.goto_manage_batch, name='goto_manage_batch'),
+    path('manage_batch/<int:batch_id>/', views.manage_batch, name='manage_batch'),
+    path('delete_batch/<int:batch_id>/', views.delete_batch, name='delete_batch'),
+
+
 
     path('create_branch/', views.create_branch, name='create_branch'),
-    path('manage_branch/', views.manage_branch, name='manage_branch'),
+    path('goto_manage_branch/', views.goto_manage_branch, name='goto_manage_branch'),
+    path('view_branch/', views.view_branch, name='view_branch'),
 
     path('director_logout', views.director_logout, name='director_logout'),
 

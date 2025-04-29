@@ -2,10 +2,10 @@ from django.db import models
 
 # Create your models here.
 class Batch(models.Model):
-    year = models.IntegerField(unique=True)  # Academic year (e.g., 2021, 2022)
+    batch_name = models.IntegerField(unique=True)  # Academic year (e.g., 2021, 2022)
     
     def __str__(self):
-        return f"Batch {self.year}"
+        return f"Batch {self.batch_name}"
     
 
 class Branch(models.Model):

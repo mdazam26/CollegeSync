@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Batches</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f8f9fa;
+      }
+
+      h1 {
+        color: #333;
+        font-size: 2rem;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        text-align: center;
+      }
+
+      th {
+        background-color: #f2f2f2;
+        color: #333;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        align-items: center;
+      }
+
+      .add-button,
+      .manage-button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      .add-button:hover,
+      .manage-button:hover {
+        background-color: #0056b3;
+      }
+
+      .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        font-size: 1rem;
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      .back-link:hover {
+        text-decoration: underline;
+      }
+
+      .no-batches {
+        text-align: center;
+        color: #888;
+        font-size: 1.2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="button-container">
+        <h1>View Batches</h1>
+        <a href="{% url 'create_batch' %}" class="add-button">Add Batch</a>
+      </div>
+
+      {% if batches %}
+      <table>
+        <thead>
+          <tr>
+            <th>Batch Year</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for batch in batches %}
+          <tr>
+            <td>{{ batch.batch_name }}</td>
+            <td>
+              <a
+                href="{% url 'goto_manage_batch' batch.id %}"
+                class="manage-button"
+                >Manage</a
+              >
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="no-batches">
+        No batches available. Add a new batch to get started!
+      </p>
+      {% endif %}
+
+      <a href="{% url 'director_dashboard' %}" class="back-link"
+        >← Back to Dashboard</a
+      >
+
+      {% if messages %}
+      <div style="color: red; text-align: center; margin-top: 20px">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </body>
+</html>

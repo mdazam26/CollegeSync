@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Batch</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f1f3f8;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 500px;
+        margin: 80px auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        font-size: 1.8rem;
+        margin-bottom: 30px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #444;
+      }
+
+      .input-wrapper {
+        position: relative;
+        margin-bottom: 20px;
+      }
+
+      input[type="number"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+      }
+
+      button {
+        width: 100%;
+        padding: 14px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      a {
+        display: inline-block;
+        text-align: center;
+        margin-top: 20px;
+        color: #333;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .messages p {
+        text-align: center;
+        color: red;
+        font-weight: bold;
+      }
+
+      /* Adding input focus effect */
+      input[type="number"]:focus {
+        border-color: #4caf50;
+        box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+          margin: 20px;
+        }
+
+        h1 {
+          font-size: 1.6rem;
+        }
+
+        input[type="number"],
+        button {
+          padding: 10px;
+        }
+
+        a {
+          margin-top: 15px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 15px;
+        }
+
+        h1 {
+          font-size: 1.4rem;
+        }
+
+        input[type="number"] {
+          font-size: 14px;
+        }
+
+        button {
+          padding: 12px;
+          font-size: 14px;
+        }
+
+        a {
+          margin-top: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Create Batch</h1>
+
+      <form action="{% url 'create_batch' %}" method="POST">
+        {% csrf_token %}
+
+        <div class="input-wrapper">
+          <label for="batch_name">Batch Year:</label>
+          <input
+            type="number"
+            name="batch_name"
+            required
+            placeholder="Enter Batch Year (e.g., 2025)"
+          />
+        </div>
+
+        <button type="submit">Submit</button>
+      </form>
+
+      <a href="{% url 'director_dashboard' %}">Back to Dashboard</a>
+      <a href="{% url 'view_batch' %}">View All Batches</a>
+
+      <div class="messages">
+        {% if messages %} {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %} {% endif %}
+      </div>
+    </div>
+  </body>
+</html>

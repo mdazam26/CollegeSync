@@ -4,10 +4,50 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>College Sync</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f1f3f8;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        flex-direction: column;
+      }
+
+      h1 {
+        font-size: 32px;
+        color: #333;
+        margin-bottom: 40px;
+      }
+
+      .login-btn {
+        background-color: #4caf50;
+        color: white;
+        padding: 14px 28px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+      }
+
+      .login-btn:hover {
+        background-color: #45a049;
+      }
+
+      a {
+        color: white;
+        text-decoration: none;
+      }
+    </style>
   </head>
   <body>
-    <h1>Welcome to college sync</h1>
+    <h1>Welcome to College Sync</h1>
 
-    <button><a href="open_login">LOGIN</a></button>
+    <a href="{% url 'open_login' %}" class="login-btn">LOGIN</a>
   </body>
 </html>
