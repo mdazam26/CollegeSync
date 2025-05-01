@@ -1,11 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>manage branch</h1>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Branch</title>
+    <style>
+      :root {
+        --primary: #007bff; /* Dark blue color for header and footer */
+        --secondary: #2c3e50;
+        --priary-hover: #0056b3;
+    
+        --btn-color : #35a85b;
+        --btn-color2: #cb7a58;
+        --danger: #dc3545;
+        --background: #f8f9fa;
+        --text: #212529;
+        --white: #fff;
+        --border-color: #dee2e6;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--background);
+        color: var(--text);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* Header */
+      header {
+        background-color: var(--secondary); /* Dark blue color */
+        color: var(--white);
+        padding: 8px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        /* position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        right: 0; */
+      }
+
+      header h2 {
+        margin: 0;
+        font-size: 24px;
+      }
+
+      header .director-name {
+        font-size: 18px;
+      }
+
+      header .logout-btn {
+        background-color: var(--danger);
+        color: var(--white);
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      header .logout-btn:hover {
+        background-color: #c82333;
+      }
+
+      /* Form Container */
+      .container {
+        flex: 1;
+        max-width: 800px;
+        width: 80%;
+        margin: 30px auto;
+        padding: 30px;
+        background-color: var(--white);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      h3 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: var(--primary);
+        font-size: 22px;
+      }
+
+      label {
+        font-weight: bold;
+        margin: 5px 0;
+        display: block;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0 15px 0;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+      }
+
+      input[readonly],
+      select[readonly] {
+        background-color: #f1f1f1;
+        cursor: not-allowed;
+      }
+
+      button {
+        padding: 12px 20px;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      .nav-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+
+      .btn1{
+        padding: 10px 20px;
+        background-color: var(--btn-color);
+        color: var(--white);
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+        margin-bottom: 10px;
+      }
+      .btn1:hover{
+        background-color: rgb(73, 175, 73);
+      }
+
+      .btn2 {
+        padding: 10px 16px;
+        background-color: var(--danger);
+        color: var(--white);
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+        margin-bottom: 10px;
+        font-size: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn2:hover{
+        background-color: rgb(6, 6, 6);
+        color: white;
+      }
+      /* .nav-buttons a:hover {
+        background-color: #565e64;
+      } */
+
+      .btn-danger {
+        padding: 10px 20px;
+        color: var(--white);
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+        margin-bottom: 10px;
+        background-color: var(--danger);
+      }
+      .btn-danger:hover{
+        background-color: rgb(184, 77, 77);
+      }
+
+      footer {
+        background-color: var(--secondary);
+        color: var(--white);
+        text-align: center;
+        padding: 15px;
+        font-size: 14px;
+        /* position: fixed;
+        width: 100%;
+        bottom: 0; */
+      }
+
+      /* Responsiveness for mobile devices */
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+          width: 90%;
+        }
+
+        .nav-buttons {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .nav-buttons a {
+          margin: 5px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div>
+        <p class="director-name">Welcome: <strong>{{ director.institute_name }} </strong> </p>
+      </div>
+      <a href="{% url 'director_logout' %}" class="logout-btn">Logout</a>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+      <h3>Update {{ branch.branch_name }} Details: </h3>
+
+      <form method="POST" action="{% url 'manage_branch' branch.id %}">
+        {% csrf_token %}
+
+        <!-- Branch Name -->
+        <label for="branch_name">Branch Name:</label>
+        <input type="text" id="branch_name" name="branch_name" value="{{ branch.branch_name }}" required />
+
+        <!-- Current Batch -->
+        <label>Current Batch:</label>
+        <input type="text" value="{{ branch.batch.batch_name }}" readonly />
+
+        <!-- Update Batch -->
+        <label for="batch">Update Batch:</label>
+        <select name="batch" id="batch">
+          <option value="">None (Reset)</option>
+          {% for batch in batches %}
+          <option value="{{ batch.id }}" {% if branch.batch and batch.id == branch.batch.id %}selected{% endif %}>
+            {{ batch.batch_name }}
+          </option>
+          {% endfor %}
+        </select>
+
+        <!-- Current HOD -->
+        <label>Current HOD:</label>
+        <input type="text" value="{{ branch.hod.hod_name }}" readonly />
+
+        <!-- Update HOD -->
+        <label for="hod">Update HOD:</label>
+        <select name="hod" id="hod">
+          <option value="">None (Reset)</option>
+          {% for h in hods %}
+          <option value="{{ h.id }}" {% if branch.hod and h.id == branch.hod.id %}selected{% endif %}>
+            {{ h.hod_name }}
+          </option>
+          {% endfor %}
+        </select>
+
+        <!-- Submit Button -->
+        <button type="submit">Update Branch</button>
+      </form>
+
+      <!-- Links for Creating Batch or HOD -->
+      <div class="nav-buttons">
+        <a href="{% url 'create_batch_form' %}" class="btn1">Create Batch</a>
+        <a href="{% url 'create_hod_form' %}" class="btn1">Create HOD</a>
+        <a href="{% url 'create_branch' %}" class="btn1">Create New Branch</a>
+        <a href="{% url 'view_branch' %}" class="btn1">View all Branch</a>
+      </div>
+
+      <!-- Links for Deleting Branch and Returning to Branch List -->
+      <div class="nav-buttons">
+        <a href="{% url 'delete_branch' branch.id %}" class="btn-danger"
+          onclick="return confirm('Are you sure you want to delete this branch?');" >Delete Branch</a>
+          <a href="{% url 'view_branch' %}" class="btn2" title="Back to Branches">🔙</a>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+    </footer>
+  </body>
 </html>

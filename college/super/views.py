@@ -7,6 +7,8 @@ from django_tenants.utils import get_tenant_model, get_public_schema_name
 from datetime import datetime
 from .forms import CollegeForm
 from django.contrib import messages
+from django.contrib.auth.models import User
+
 # Create your views here.
 
 def main(request):
@@ -127,6 +129,17 @@ def manage(request, college_id):
 
         # Update paid_until date
         college.paid_until = request.POST.get('paid_until')
+
+        newAdmin_password = request.POST.get('admin_password')
+        newConfirm_password = request.POST.get('confirm_password')
+
+        if newAdmin_password or newConfirm_password:
+            if newAdmin_password == newConfirm_password:
+                # Hash and assign the new password directly
+                college.admin_password = make_password(newAdmin_password)
+            else:
+                messages.error(request, "Passwords do not match.")
+                return render(request, 'super/manage.html', {'college': college})
 
         # Save the changes to the college object
         college.save()

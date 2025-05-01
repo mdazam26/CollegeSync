@@ -3,124 +3,268 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-
+    <title>Manage Batch: {{ batch.batch_name }}</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
+      :root {
+        --primary-color: #007bff;
+        --danger-color: #dc3545;
+        --secondary-color: #2c3e50;
+        --light-bg: #f4f6f9;
+        --white: #ffffff;
       }
 
-      h1 {
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--light-bg);
         color: #333;
+        /* padding: 30px; */
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* Header Styles */
+      .header {
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-middle {
+        font-size: 20px;
+        text-align: center;
+      }
+
+      .header-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      .logout-btn {
+        background-color: var(--danger-color);
+        padding: 8px 15px;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+      }
+
+      .logout-btn:hover {
+        background-color: #c62828;
+      }
+
+      .container {
+        width: 60%;
+        /* max-width: 800px; */
+        margin: 20px auto;
+        background: var(--white);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      h1,
+      h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: var(--secondary-color);
       }
 
       form {
-        margin-bottom: 20px;
+        margin-bottom: 30px;
+        text-align: center;
       }
 
       label {
         font-weight: bold;
+        margin-right: 10px;
+        font-size: 16px;
       }
 
       input[type="number"] {
-        padding: 5px;
+        padding: 10px;
         width: 200px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      .button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s ease;
+        margin: 10px 5px;
+      }
+
+      .save {
+        background-color: var(--primary-color);
+      }
+
+      .save:hover {
+        background-color: #0056b3;
+      }
+
+      .delete {
+        background-color: var(--danger-color);
+      }
+
+      .delete:hover {
+        background-color: #c82333;
+      }
+
+      .back {
+        background-color: #6c757d;
+      }
+
+      .back:hover {
+        background-color: #5a6268;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
+        margin-top: 15px;
       }
 
-      table th,
-      table td {
-        border: 1px solid #ccc;
-        padding: 10px;
-        text-align: left;
+      th,
+      td {
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        text-align: center;
       }
 
-      table th {
+      th {
         background-color: #f2f2f2;
+        color: #333;
       }
 
-      .button-container {
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      .messages {
         margin-top: 20px;
+        text-align: center;
       }
 
-      .button {
-        display: inline-block;
-        padding: 10px 20px;
-        margin-right: 10px;
-        background-color: #007bff;
+      .messages p {
+        color: red;
+        font-weight: bold;
+      }
+
+      footer {
+        background-color: var(--secondary-color);
         color: white;
-        text-decoration: none;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
+        padding: 15px;
+        text-align: center;
+        font-size: 14px;
+        margin-top: 40px;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
       }
 
-      .button.delete {
-        background-color: #dc3545;
-      }
+      @media (max-width: 600px) {
+        input[type="number"] {
+          width: 100%;
+          margin-top: 10px;
+        }
 
-      .button.back {
-        background-color: #6c757d;
+        form {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .button {
+          width: 100%;
+          margin: 5px 0;
+        }
       }
     </style>
   </head>
   <body>
-    <h1>MANAGE BATCH</h1>
+    <!-- Header -->
+    <header class="header">
+      <p>Welcome, {{ director.admin_name }}</p>
+      <a href="{% url 'director_logout' %}" class="logout-btn">Logout</a>
+    </header>
 
-    <h1>Manage Batch: {{ batch.batch_name }}</h1>
+    <!-- Main Content -->
+    <div class="container">
+      <h1>Manage Batch: {{ batch.batch_name }}</h1>
 
-    <form method="POST" action="{% url 'manage_batch' batch.id %}">
-      {% csrf_token %}
-      <label for="batch_name">Batch Year:</label>
-      <input
-        type="number"
-        name="batch_name"
-        value="{{ batch.batch_name }}"
-        required
-      />
-      <button type="submit" class="button">Save</button>
-    </form>
+      <form method="POST" action="{% url 'manage_batch' batch.id %}">
+        {% csrf_token %}
+        <label for="batch_name">Batch Year:</label>
+        <input
+          type="number"
+          name="batch_name"
+          value="{{ batch.batch_name }}"
+          required
+        />
+        <button type="submit" class="button save">Save</button>
+      </form>
 
-    <h2>Associated Branches</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Branch Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% if branches %} {% for branch in branches %}
-        <tr>
-          <td>{{ branch.branch_name }}</td>
-        </tr>
-        {% endfor %} {% else %}
-        <tr>
-          <td colspan="1">No branches yet.</td>
-        </tr>
-        {% endif %}
-      </tbody>
-    </table>
+      <h2>Associated Branches</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Branch Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if branches %} {% for branch in branches %}
+          <tr>
+            <td>{{ branch.branch_name }}</td>
+          </tr>
+          {% endfor %} {% else %}
+          <tr>
+            <td colspan="1">No branches yet.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
 
-    <div class="button-container">
-      <a
-        href="{% url 'delete_batch' batch.id %}"
-        class="button delete"
-        onclick="return confirm('Are you sure you want to delete this batch?');"
-        >Delete Batch</a
-      >
-      <a href="{% url 'view_batch' %}" class="button back">Back to Batches</a>
+      <div style="text-align: center; margin-top: 30px">
+        <a
+          href="{% url 'delete_batch' batch.id %}"
+          class="button delete"
+          onclick="return confirm('Are you sure you want to delete this batch?');"
+        >
+          Delete Batch
+        </a>
+        <a href="{% url 'view_batch' %}" class="button back">Back to Batches</a>
+      </div>
+
+      <div class="messages">
+        {% if messages %} {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %} {% endif %}
+      </div>
     </div>
 
-    <div>
-      {% if messages %} {% for message in messages %}
-      <p style="color: red">{{ message }}</p>
-      {% endfor %} {% endif %}
-    </div>
+    <!-- Footer -->
+    <footer class="footer">
+      &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+    </footer>
   </body>
 </html>

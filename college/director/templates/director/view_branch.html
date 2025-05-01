@@ -3,9 +3,233 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>View Branches</title>
+    <style>
+      :root {
+        --primary: #007bff; /* Original primary blue color */
+        --secondary: #2c3e50; /* Dark grayish-blue */
+        --danger: #e53935; /* Red color */
+        --background: #e6f0ff; /* Light blue */
+        --text: #333;
+        --white: rgb(222, 220, 220); /* Light gray */
+        --border-color: #dee2e6;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--background);
+        color: var(--text);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* Header */
+      .header {
+        background-color: var(--secondary); /* Dark grayish-blue for header */
+        color: var(--white);
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .header h2 {
+        margin: 0;
+      }
+
+      .nav-buttons a {
+        background-color: var(--white);
+        color: var(--primary);
+        text-decoration: none;
+        padding: 8px 14px;
+        margin-left: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      .nav-buttons a:hover {
+        background-color: #e2e6ea;
+      }
+
+      .container {
+        flex: 1;
+        /* max-width: 1000px; */
+        width: 60%;
+        margin: 30px auto;
+        padding: 20px;
+        background-color: var(--white);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      h3 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: var(--primary);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid var(--border-color);
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: center;
+      }
+
+      th {
+        background-color: var(--primary); /* Blue for the table header */
+        color: var(--white);
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      .btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        color: var(--white);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: bold;
+        display: inline-block;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+      }
+
+      .btn-secondary {
+        background-color: var(--secondary);
+      }
+
+      #btn-danger {
+        background-color: var(--danger); /* Red color */
+        color: var(--white); /* White text */
+        padding: 6px 12px;
+        border: none;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: bold;
+        display: inline-block;
+        transition: background-color 0.3s ease; /* Smooth transition */
+        padding: 8px 14px;
+        font-weight: bold;
+        border-radius: 5px;
+      }
+
+      #btn-danger:hover {
+        background-color: #bb4141; /* Darker red for hover effect */
+        /* color: var(--white); Keep white text */
+      }
+
+      .btn-success {
+        background-color: #28a745;
+      }
+
+      .btn:hover {
+        opacity: 0.85;
+      }
+
+      /* Footer */
+      footer {
+        background-color: var(--secondary); /* Dark grayish-blue for footer */
+        color: var(--white);
+        text-align: center;
+        padding: 15px;
+        font-size: 14px;
+      }
+
+      @media (max-width: 768px) {
+        .header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .nav-buttons {
+          margin-top: 10px;
+        }
+
+        .nav-buttons a {
+          margin: 5px 5px 0 0;
+        }
+      }
+    </style>
   </head>
   <body>
-    view Branch
+    <!-- Header -->
+    <header class="header">
+      <h2>Welcome, {{ director.admin_name }}</h2>
+      <div class="nav-buttons">
+        <a href="{% url 'create_branch_form' %}" class="btn btn-success"
+          >Create Branch</a
+        >
+        <a href="{% url 'director_dashboard' %}" class="btn btn-secondary"
+          >Dashboard</a
+        >
+        <a href="{% url 'director_logout' %}" id="btn-danger">Logout</a>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+      <h3>All Branches</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Branch Name</th>
+            <th>Batch</th>
+            <th>HOD</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for branch in branches %}
+          <tr>
+            <td>{{ branch.branch_name }}</td>
+            <td>
+              {% if branch.batch %} {{ branch.batch.batch_name }} {% else %} Not
+              assigned {% endif %}
+            </td>
+            <td>
+              {% if branch.hod %} {{ branch.hod.hod_name }} {% else %} Not
+              assigned {% endif %}
+            </td>
+            <td>
+              <a
+                href="{% url 'goto_manage_branch' branch.id %}"
+                class="btn btn-primary"
+                >Manage</a
+              >
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4">No branches found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+    </footer>
   </body>
 </html>

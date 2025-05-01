@@ -7,7 +7,7 @@
     <style>
       body {
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f1f3f8;
+        background: linear-gradient(135deg, #6c7a6e, #6f7175);
         margin: 0;
         padding: 0;
         display: flex;
@@ -18,36 +18,71 @@
       }
 
       h1 {
-        font-size: 32px;
-        color: #333;
-        margin-bottom: 40px;
+        font-size: 38px;
+        color: #b2bac2;
+        margin-bottom: 50px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      }
+
+      .login-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
       }
 
       .login-btn {
-        background-color: #4caf50;
-        color: white;
-        padding: 14px 28px;
+        padding: 14px 32px;
         font-size: 18px;
         border: none;
-        border-radius: 8px;
+        border-radius: 10px;
         cursor: pointer;
         text-decoration: none;
-        transition: background-color 0.3s ease;
+        width: 260px;
+        text-align: center;
+        font-weight: bold;
+        color: white;
+        transition: transform 0.2s ease, background-color 0.3s ease;
       }
 
       .login-btn:hover {
-        background-color: #45a049;
+        transform: translateY(-2px);
       }
 
-      a {
-        color: white;
-        text-decoration: none;
+      .director-btn {
+        background-color: #007bff;
+      }
+
+      .director-btn:hover {
+        background-color: #0056b3;
+      }
+
+      .hod-btn {
+        background-color: #74e46c;
+      }
+
+      .hod-btn:hover {
+        background-color: #56a850;
+      }
+
+      .professor-btn {
+        background-color: #cf3237;
+      }
+
+      .professor-btn:hover {
+        background-color: #893134;
       }
     </style>
   </head>
   <body>
     <h1>Welcome to College Sync</h1>
 
-    <a href="{% url 'open_login' %}" class="login-btn">LOGIN</a>
+    <div class="login-buttons">
+      <a href="{% url 'open_login' %}" class="login-btn director-btn">
+        Director Login
+      </a>
+      <a href="#" class="login-btn hod-btn">HOD Login</a>
+      <a href="#" class="login-btn professor-btn">Professor Login</a>
+    </div>
   </body>
 </html>
