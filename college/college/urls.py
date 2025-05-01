@@ -23,8 +23,7 @@ urlpatterns = [
     
     path('start/', views.start),
 
-
-    
+  
 
 
     path('super/', include('super.urls')), #its redirect to control for superuser

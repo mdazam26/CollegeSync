@@ -11,8 +11,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -20,28 +25,56 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#7hdw6)#^zyot=@i0hfu3k4ez4uw-oycbhp5kpf*z++uh@1@rb'
+DEBUG = os.getenv('DEBUG') == "1"
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
 
 
 # Application definition
 
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
+# INSTALLED_APPS = [
+#     'django_tenants',           
+#     'django.contrib.admin',
+#     'django.contrib.auth',
+#     'django.contrib.contenttypes',
+#     'django.contrib.sessions',
+#     'django.contrib.messages',
+#     'django.contrib.staticfiles',
+    
+#     'director',                
+#     'super',      
+#     'tenants'              
+# ]
+
+
+SHARED_APPS = [
+    'django_tenants',  # Django tenants itself
+    'tenants',
+    'super',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'director',
-    'super',
 ]
 
+TENANT_APPS = [
+    'director',  # Add tenant-specific apps here
+    # 'super',      
+]
+
+INSTALLED_APPS = list(set(SHARED_APPS + TENANT_APPS))
+
 MIDDLEWARE = [
+    'django_tenants.middleware.TenantMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -51,7 +84,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'college.urls'
+
 
 TEMPLATES = [
     {
@@ -75,11 +108,21 @@ WSGI_APPLICATION = 'college.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+   'default': {
+        'ENGINE': 'django_tenants.postgresql_backend',
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
     }
 }
+
+
+
+DATABASE_ROUTERS = (
+    'django_tenants.routers.TenantSyncRouter',
+)
 
 
 # Password validation
@@ -132,3 +175,12 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 # Optional: refresh session timeout on each request
 SESSION_SAVE_EVERY_REQUEST = True
+
+
+TENANT_DOMAIN_MODEL = 'tenants.TenantDomain'
+TENANT_MODEL = 'tenants.Tenant'  
+PUBLIC_SCHEMA_NAME = "public"
+ROOT_URLCONF = 'college.urls'
+
+# Replace 'yourapp.Tenant' with the actual path to your Tenant model
+
