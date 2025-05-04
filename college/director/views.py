@@ -3,12 +3,13 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import check_password , make_password
 from django.utils import timezone
 from django_tenants.utils import schema_context
 from django.db import connection
+from django.db.models import ProtectedError
 from super.models import College
-from .models import Batch, Branch, HOD
+from .models import Batch, Branch, Teacher, ClassGroup
 from datetime import datetime
 
 # Create your views here.
@@ -16,22 +17,8 @@ def index(request):
     return render(request, 'director/index.html')
 
 
-def open_login(request):
+def open_director_login(request):
     return render(request, 'director/login.html')
-
-
-def director_dashboard(request):
-    if 'director_id' not in request.session:
-        return redirect('open_login')
-    
-    director_id = request.session['director_id']
-
-    try:
-        director = College.objects.get(id=director_id)
-    except College.DoesNotExist:
-        messages.error(request, "Director not found.")
-        return redirect('open_login')  # If director is not found, redirect to login
-    return render(request, 'director/director_dashboard.html', {'director' : director})
 
 def director_login(request):
     if request.method == "POST":
@@ -75,349 +62,571 @@ def director_login(request):
 
     return render(request, 'director/login.html')
 
-def create_hod_form(request):
-    return render(request, 'director/create_hod_form.html')
-
-def create_hod(request):
-    # Logic for creating HOD
-    return render(request, 'director/create_hod.html')
-
-# View for managing HODs
-def manage_hod(request):
-    # Logic for managing HODs
-    return render(request, 'director/manage_hod.html')
-
-def view_hod(request):
-    return render(request, 'director/view_hod.html')
-
-# View for creating Batch
-def create_batch_form(request):
-    director_id = request.session['director_id']
-    try:
-        director = College.objects.get(id = director_id)
-    except College.DoesNotExist:
-        messages.error(request, "Director not found")
-        return redirect('director_dashboard')
-    
-    # Logic for creating batch
-    return render(request, 'director/create_batch_form.html', {'director': director})
-
-def create_batch(request):
+def director_dashboard(request):
     if 'director_id' not in request.session:
         return redirect('open_login')
-
-    if request.method == "POST":
-        batch_name = request.POST.get('batch_name')
-
-        if batch_name:
-            try:
-                batch_year = int(batch_name)
-                current_year = datetime.now().year
-                min_year = current_year - 50
-
-                if min_year <= batch_year <= current_year:
-                    if not Batch.objects.filter(batch_name=batch_year).exists():
-                        Batch.objects.create(batch_name=batch_year)
-                        messages.success(request, "Batch created successfully.")
-                    else:
-                        messages.error(request, "Batch with this year already exists.")
-                else:
-                    messages.error(request, f"Batch year must be between {min_year} and {current_year}.")
-            except ValueError:
-                messages.error(request, "Invalid batch year. Please enter a valid number.")
-        else:
-            messages.error(request, "Please enter a batch year.")
-
-    return redirect('create_batch_form')
-
-def view_batch(request):
-    batches = Batch.objects.all().order_by('-batch_name')  # Optional ordering
-    director_id = request.session['director_id']
-    try:
-        director = College.objects.get(id = director_id)
-    except College.DoesNotExist:
-        messages.error(request, "Director not found")
-    return render(request, 'director/view_batch.html', {'batches': batches, 'director': director})
-
-# View for managing Batches
-def goto_manage_batch(request,batch_id):
-    director_id = request.session['director_id']
-    try:
-        batch = Batch.objects.get(id=batch_id)
-        branches = Branch.objects.filter(batch=batch)
-        director = College.objects.get(id = director_id)
-        return render(request, 'director/goto_manage_batch.html', {
-            'batch': batch,
-            'branches': branches,
-            'director': director
-        })
-    except Batch.DoesNotExist:
-        messages.error(request, "Batch not found.")
-        return redirect('view_batch')
-
-def manage_batch(request, batch_id):
-    try:
-        batch = Batch.objects.get(id=batch_id)
-    except Batch.DoesNotExist:
-        messages.error(request, "Batch not found.")
-        return redirect('view_batch')  # Redirect to the batch view page if batch does not exist.
-
-    branches = batch.branches.all()  # Get all branches associated with this batch.
-
-    current_year = datetime.now().year  # Get the current year (e.g., 2025).
-    min_year = current_year - 50  # The minimum valid batch year (e.g., 1975).
     
-    if request.method == "POST":
-        batch_name = request.POST.get("batch_name")
-        
-        # Validate the batch year: Ensure it is within the range of current_year and min_year
-        try:
-            batch_year = int(batch_name)
-            if not (min_year <= batch_year <= current_year):
-                messages.error(request, f"Batch year must be between {min_year} and {current_year}.")
-                return render(request, 'director/goto_manage_batch.html', {'batch': batch, 'branches': branches})
-        except ValueError:
-            messages.error(request, "Invalid year. Please enter a valid number.")
-            return render(request, 'director/goto_manage_batch.html', {'batch': batch, 'branches': branches})
-        
-        # Check if the new batch name already exists (excluding the current batch)
-        if Batch.objects.exclude(id=batch.id).filter(batch_name=batch_name).exists():
-            messages.error(request, "Batch name already exists. Please choose a different name.")
-            return render(request, 'director/goto_manage_batch.html', {'batch': batch, 'branches': branches})
-
-        # If unique, update the batch name
-        batch.batch_name = batch_name
-        batch.save()
-
-        # Add a success message and redirect to the view_batch page
-        messages.success(request, "Batch successfully updated!")
-        return redirect('view_batch')  # Redirect to the view_batch page after updating the batch.
-
-    return render(request, 'director/goto_manage_batch.html', {'batch': batch, 'branches': branches})
-
-def delete_batch(request, batch_id):
-    try:
-        batch = Batch.objects.get(id=batch_id)
-        batch.delete()
-        # Add a success message for deletion
-        messages.success(request, "Batch successfully deleted.")
-    except Batch.DoesNotExist:
-        messages.error(request, "Batch not found.")
-
-    return redirect('view_batch')  # Redirect to the view_batch page after deletion.
-
-# batch end 
-
-# branch start
-
-# View for assigning Branch
-def create_branch_form(request):
-    director_id = request.session.get('director_id')  # Use get to avoid KeyError if 'director_id' doesn't exist
-    if not director_id:
-        messages.error(request, "Director not found. Please log in again.")
-        return redirect('open_login')  # Redirect to login if no director_id in session
+    director_id = request.session['director_id']
 
     try:
         director = College.objects.get(id=director_id)
     except College.DoesNotExist:
         messages.error(request, "Director not found.")
-        return redirect('open_login')
+        return redirect('open_director_login')  # If director is not found, redirect to login
+    return render(request, 'director/director_dashboard.html', {'director' : director})
 
-    # Fetch all batches for the director (assuming you want to show batches related to this director)
-    batches = Batch.objects.all()  # Modify this query if batches are specific to the director
+def director_logout(request):
+    logout(request)
+    return redirect('open_director_login')
 
-    # Fetch all branches (or modify as needed if you want only active branches)
-    branches = Branch.objects.all()  # Adjust query if necessary
+
+
+
+# teacher start
+
+def create_teacher_form(request):
+    director_id = request.session['director_id']
+    try:
+        director = College.objects.get(id = director_id)
+    except College.DoesNotExist:
+        messages.error(request, "Director not found")
+        return redirect('open_director_login')
+    return render(request, 'director/create_teacher_form.html' , {'director' : director})
+
+def create_teacher(request):
+    if request.method == 'POST':
+        teacher_name = request.POST.get('teacher_name').strip()
+        teacher_username = request.POST.get('teacher_username').strip()
+        teacher_password = request.POST.get('teacher_password').strip()
+        teacher_email = request.POST.get('teacher_email').strip()
+        teacher_phone = request.POST.get('teacher_phone').strip()
+        is_hod = request.POST.get('is_hod', '').lower() == 'true'
+
+        # Basic validation for required fields
+        if not teacher_name or not teacher_username or not teacher_password:
+            messages.error(request, "Name, Username, and Password are required fields.")
+            return redirect('create_teacher_form')
+
+        # Check if the teacher username already exists
+        if Teacher.objects.filter(teacher_username=teacher_username).exists():
+            messages.error(request, "Username already taken. Please choose a different username.")
+            return redirect('create_teacher_form')
+
+        # Optionally, check if the email is unique
+        if teacher_email and Teacher.objects.filter(teacher_email=teacher_email).exists():
+            messages.error(request, "Email is already registered.")
+            return redirect('create_teacher_form')
+
+        # Hash the password before saving
+        hashed_password = make_password(teacher_password)
+
+        # Create Teacher object
+        teacher = Teacher(
+            teacher_name=teacher_name,
+            teacher_username=teacher_username,
+            teacher_password=hashed_password,
+            teacher_email=teacher_email,
+            teacher_phone=teacher_phone,
+            is_hod=is_hod,
+        )
+        try:
+            teacher.save()
+        except Exception as e:
+            messages.error(request, f"An error occured while creating the teacher: {e}")
+            return redirect('create_teacher_form')
+        messages.success(request, "Teacher created successfully!")
+        return redirect('view_teacher')  # Redirect to the view teachers page or another page as needed
+
+    else:
+        return redirect('create_teacher_form')
+
+def view_teacher(request):
+    director_id = request.session.get('director_id')
+    try:
+        director = College.objects.get(id=director_id)
+    except College.DoesNotExist:
+        messages.error(request, "Director not found")
+        return redirect('open_director_login')
+
+    all_teachers = Teacher.objects.all()
+    hods = all_teachers.filter(is_hod=True)
+    normal_teachers = all_teachers.filter(is_hod=False)
+
+    # Add branch info directly to each HOD object
+    for hod in hods:
+        branch = Branch.objects.filter(branch_hod = hod).first()
+        hod.branch_name = branch.branch_name if branch else "Not Decided"
+
+    return render(request, 'director/view_teacher.html', {
+        'director': director,
+        'hods': hods,
+        'teachers': normal_teachers,
+    })
+
+    return HttpResponse("view teaher logic")
+    
+def goto_manage_teacher(request, teacher_id):
+    director_id = request.session.get('director_id')
+
+    if not director_id:
+        messages.error(request, "Director not found. Please log in again.")
+        return redirect('open_director_login')
+
+    try:
+        director = College.objects.get(id=director_id)
+    except College.DoesNotExist:
+        messages.error(request, "Director not found.")
+        return redirect('open_director_login')
+
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+
+    # Get branch name from reverse relation if teacher is a HOD
+    branch = Branch.objects.filter(branch_hod=teacher).first()
+    branch_name = branch.branch_name if branch else "Not Assigned"
+
+    return render(request, 'director/goto_manage_teacher.html', {
+        'teacher': teacher,
+        'director': director,
+        'branch_name': branch_name,
+    })
+
+def manage_teacher(request, teacher_id):
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+
+    if request.method == 'POST':
+        # Update basic fields
+        teacher.teacher_name = request.POST.get('teacher_name')
+        teacher.teacher_username = request.POST.get('teacher_username')
+        teacher.teacher_email = request.POST.get('teacher_email')
+        teacher.teacher_phone = request.POST.get('teacher_phone')
+
+        # Update is_hod checkbox (only present if checked)
+        teacher.is_hod = 'is_hod' in request.POST
+
+        # Handle password change if new password is provided
+        new_password = request.POST.get('teacher_password')
+        if new_password:
+            teacher.set_password(new_password)  # securely hashes the password
+
+        # Save changes
+        teacher.save()
+
+        messages.success(request, "Teacher updated successfully.")
+        return redirect('view_teacher')
+
+    # Fallback for non-POST (shouldn’t be hit under normal usage)
+    messages.error(request, "Invalid request method.")
+    return redirect('view_teacher')
+
+def delete_teacher(request, teacher_id):
+     # Try to fetch the teacher, if not found, it will raise a 404 error automatically
+    try:
+        teacher = get_object_or_404(Teacher, id = teacher_id)
+        teacher.delete()
+        messages.success(request, "Techer successfully deleted.")
+        return redirect("view_teacher")
+    except Exception as e:
+        messages.error(request, f"An error occured while trying to delete the teacher {str(e)} ")
+        return redirect("view_teacher")
+   
+
+# teaher end
+
+
+
+
+
+
+# branch start
+
+def create_branch_form(request):
+    director_id = request.session.get('director_id')
+
+    if not director_id:
+        messages.error(request, "Director not found. Please log in again.")
+        return redirect('open_director_login')
+
+    try:
+        director = College.objects.get(id=director_id)
+    except College.DoesNotExist:
+        messages.error(request, "Director not found.")
+        return redirect('open_director_login')
+
+    # Fetch teachers eligible to be selected as HODs
+    teachers = Teacher.objects.filter(is_hod=True)
 
     return render(request, 'director/create_branch_form.html', {
         'director': director,
-        'batches': batches,
-        'branches': branches
+        'teachers': teachers,
     })
 
 def create_branch(request):
     if request.method == 'POST':
-        # Get the form data
         branch_name = request.POST.get('branch_name')
-        batch_id = request.POST.get('batch')  # Optional, may be empty
-        hod_id = request.POST.get('hod')  # Optional, may be empty
-        
-        # Validate that branch name is provided
+        teacher_id = request.POST.get('branch_hod')  # "None" if not selected
+
+        # Validate branch name
         if not branch_name:
             messages.error(request, "Branch name is required.")
-            return redirect('create_branch_form')  # Redirect back to the form with error message
+            return redirect('create_branch_form')
 
-        # Validate that a batch is selected
-        if not batch_id:
-            messages.error(request, "Batch is required. Please create a batch first.")
-            return redirect('create_batch_form')  # Redirect to the create batch form if no batch is selected
+        # Check for duplicate branch name
+        if Branch.objects.filter(branch_name=branch_name).exists():
+            messages.error(request, f"Branch '{branch_name}' already exists.")
+            return redirect('create_branch_form')
 
-        # Check if the branch already exists in the selected batch
+        # If no HOD selected, redirect to teacher form
+        if not teacher_id:
+            messages.error(request, "HOD is mandatory. Please create/select a teacher as HOD.")
+            return redirect('create_teacher_form')
+
+        # Validate the selected teacher
         try:
-            batch = Batch.objects.get(id=batch_id)
-        except Batch.DoesNotExist:
-            messages.error(request, "Selected batch does not exist.")
-            return redirect('create_branch_form')  # Redirect back if batch is not valid
+            teacher = Teacher.objects.get(id=teacher_id)
+        except Teacher.DoesNotExist:
+            messages.error(request, "Selected HOD does not exist.")
+            return redirect('create_branch_form')
 
-        if Branch.objects.filter(batch=batch, branch_name=branch_name).exists():
-            messages.error(request, f"Branch '{branch_name}' already exists in the {batch.batch_name} batch.")
-            return redirect('create_branch_form')  # Redirect back to the form if branch already exists
+        # Check if this teacher is already assigned as HOD
+        if Branch.objects.filter(branch_hod=teacher).exists():
+            messages.error(request, f"{teacher.teacher_name} is already assigned as HOD to another branch.")
+            return redirect('create_branch_form')
 
-        # Create the Branch object
-        branch = Branch(branch_name=branch_name, batch=batch)
-
-        # If an HOD is selected, set it (optional)
-        if hod_id:
-            try:
-                hod = HOD.objects.get(id=hod_id)
-                branch.hod = hod
-            except HOD.DoesNotExist:
-                messages.error(request, "Selected HOD does not exist.")
-                return redirect('create_branch_form')  # Redirect back if HOD is not valid
-
-        # Save the Branch object
+        # Create and save the branch
+        branch = Branch(branch_name=branch_name, branch_hod=teacher)
         branch.save()
 
-        # Success message
         messages.success(request, "Branch created successfully!")
+        return redirect('view_branch')
 
-        # Redirect to the 'view_branch' page after successfully creating the branch
-        return redirect('view_branch')  # Redirect to view branch after creation
-
-    # If the request method is not POST, show the branch creation form
     return redirect('create_branch_form')
-
 
 def view_branch(request):
     director_id = request.session.get('director_id')
     if not director_id:
         messages.error(request, "Director not found. Please log in again.")
-        return redirect('open_login')
+        return redirect('open_director_login')
 
     try:
         director = College.objects.get(id=director_id)
     except College.DoesNotExist:
         messages.error(request, "Director not found.")
-        return redirect('open_login')
+        return redirect('open_director_login')
 
     try:
-        branches = Branch.objects.select_related('batch', 'hod').order_by('branch_name')
+        branches = Branch.objects.select_related('branch_hod').order_by('branch_name')
     except Exception as e:
         messages.error(request, f"Error fetching branches: {str(e)}")
         branches = []
 
-    try:
-        batches = Batch.objects.all().order_by('-batch_name')
-    except Exception as e:
-        messages.error(request, f"Error fetching batches: {str(e)}")
-        batches = []
-
     return render(request, 'director/view_branch.html', {
         'branches': branches,
-        'batches': batches,
         'director': director
     })
 
-# View for managing Branches
 def goto_manage_branch(request, branch_id):
-    # Logic for managing branches
     director_id = request.session.get('director_id')
-    
+
     if not director_id:
         messages.error(request, "Director not found. Please log in again.")
-        return redirect('open_login')  # Redirect to login if no director_id in session
-    
+        return redirect('open_director_login')
+
     try:
         director = College.objects.get(id=director_id)
     except College.DoesNotExist:
         messages.error(request, "Director not found.")
-        return redirect('open_login')
+        return redirect('open_director_login')
 
-    # Fetch the branch by ID, or return 404 if not found
     branch = get_object_or_404(Branch, id=branch_id)
 
-    # Accessing the associated batch and HOD for the branch
-    # batch = Batch.objects.all()
-    # hod = HOD.objects.all()
-
-    batches = Batch.objects.all().order_by('-batch_name')
-    hods = HOD.objects.all().order_by('hod_name')
+    # Get all HOD-eligible teachers
+    hods = Teacher.objects.filter(is_hod=True).order_by('teacher_name')
 
     return render(request, 'director/goto_manage_branch.html', {
         'branch': branch,
         'director': director,
-        'batches': batches,  # <-- changed from 'batch'
-        'hods': hods, 
+        'hods': hods
     })
 
 def manage_branch(request, branch_id):
-     # Fetch the branch to manage
     branch = get_object_or_404(Branch, id=branch_id)
-    batches = Batch.objects.all().order_by('-batch_name')  # Available batches
-    hods = HOD.objects.all().order_by('hod_name')  # Available HODs
 
     if request.method == 'POST':
-        # Get the form data
         branch_name = request.POST.get('branch_name')
-        batch_id = request.POST.get('batch')
-        hod_id = request.POST.get('hod')
+        teacher_id = request.POST.get('branch_hod')  # Could be empty ("None")
 
         # Validate branch name
         if not branch_name:
             messages.error(request, "Branch name is required.")
-            return render(request, 'director/manage_branch.html', {
-                'branch': branch,
-                'batches': batches,
-                'hods': hods,
-            })
+            return redirect('goto_manage_branch', branch_id=branch.id)
 
-        # Check if the branch already exists in the selected batch
-        if batch_id:
-            # Get the batch object
-            batch = Batch.objects.get(id=batch_id)
-            if Branch.objects.filter(batch=batch, branch_name=branch_name).exclude(id=branch.id).exists():
-                messages.error(request, f"Branch '{branch_name}' already exists in the {batch.batch_name} batch.")
-                return render(request, 'director/manage_branch.html', {
-                    'branch': branch,
-                    'batches': batches,
-                    'hods': hods,
-                })
+        # Check if branch name is used by another branch
+        if Branch.objects.exclude(id=branch.id).filter(branch_name=branch_name).exists():
+            messages.error(request, f"Branch '{branch_name}' already exists.")
+            return redirect('goto_manage_branch', branch_id=branch.id)
 
-        # Update branch details
+        # Check if HOD was not selected (None)
+        if not teacher_id:
+            messages.error(request, "HOD is mandatory. Please create/select a teacher as HOD.")
+            return redirect('create_teacher_form')
+
+        try:
+            teacher = Teacher.objects.get(id=teacher_id)
+        except Teacher.DoesNotExist:
+            messages.error(request, "Selected HOD does not exist.")
+            return redirect('goto_manage_branch', branch_id=branch.id)
+
+        # Ensure the selected teacher is not already assigned as HOD to a different branch
+        if Branch.objects.exclude(id=branch.id).filter(branch_hod=teacher).exists():
+            messages.error(request, f"{teacher.teacher_name} is already assigned as HOD to another branch.")
+            return redirect('goto_manage_branch', branch_id=branch.id)
+
+        # Update the branch
         branch.branch_name = branch_name
-
-        if batch_id:
-            batch = Batch.objects.get(id=batch_id)
-            branch.batch = batch
-
-        if hod_id:
-            hod = HOD.objects.get(id=hod_id)
-            branch.hod = hod
-
-        # Save updated branch
+        branch.branch_hod = teacher
         branch.save()
 
         messages.success(request, "Branch updated successfully!")
-        return redirect('view_branch')  # Redirect to the view_branch page after successful update
+        return redirect('view_branch')
 
-    return render(request, 'director/manage_branch.html', {
-        'branch': branch,
-        'batches': batches,
-        'hods': hods,
-    })
+    return redirect('goto_manage_branch', branch_id=branch.id)
 
 def delete_branch(request, branch_id):
+    branch = get_object_or_404(Branch, id=branch_id)
+    
     try:
-        branch = get_object_or_404(Branch, id=branch_id)
         branch.delete()
-        messages.success(request, "Branch deleted successfully.")
-    except Branch.DoesNotExist:
-        messages.error(request, "Branch not found.")
+        messages.success(request, f"Branch '{branch.branch_name}' deleted successfully.")
+    except ProtectedError:
+        messages.error(request, f"Cannot delete branch '{branch.branch_name}' because it is used in one or more classes.")
+    except Exception as e:
+        messages.error(request, f"Failed to delete branch: {str(e)}")
 
     return redirect('view_branch')
 
 
+# branch end 
 
-def director_logout(request):
-    logout(request)
-    return redirect('open_login')
+
+
+# View for creating Batch
+def create_batch_form(request):
+    director_id = request.session.get('director_id')
+
+    if not director_id:
+        messages.error(request, "Director not found. Please log in again.")
+        return redirect('open_director_login')
+
+    try:
+        director = College.objects.get(id=director_id)
+    except College.DoesNotExist:
+        messages.error(request, "Director not found.")
+        return redirect('open_director_login')
+
+    return render(request, 'director/create_batch_form.html', {'director': director})
+
+def create_batch(request):
+    if request.method == "POST":
+        batch_name = request.POST.get('batch_name', '').strip()
+
+        # Validate input is present
+        if not batch_name:
+            messages.error(request, "Please enter a batch year.")
+            return redirect('create_batch_form')
+
+        try:
+            batch_year = int(batch_name)
+            current_year = datetime.now().year
+            min_year = current_year - 50
+
+            # Check if batch year is within valid range
+            if not (min_year <= batch_year <= current_year):
+                messages.error(request, f"Batch year must be between {min_year} and {current_year}.")
+                return redirect('create_batch_form')
+
+            # Check for duplicates
+            if Batch.objects.filter(batch_name=batch_year).exists():
+                messages.error(request, f"Batch '{batch_year}' already exists.")
+                return redirect('create_batch_form')
+
+            # Create the batch
+            Batch.objects.create(batch_name=batch_year)
+            messages.success(request, f"Batch '{batch_year}' created successfully.")
+            return redirect('view_batch')
+
+        except ValueError:
+            messages.error(request, "Invalid batch year. Please enter a valid number.")
+            return redirect('create_batch_form')
+
+    return redirect('create_batch_form')
+
+def view_batch(request):
+    # Check if the director is logged in
+    director_id = request.session.get('director_id')
+    if not director_id:
+        messages.error(request, "Director not found. Please log in again.")
+        return redirect('open_director_login')
+
+    try:
+        # Fetch the director object
+        director = College.objects.get(id=director_id)
+    except College.DoesNotExist:
+        messages.error(request, "Director not found.")
+        return redirect('open_director_login')
+
+    try:
+        # Fetch all batches
+        batches = Batch.objects.all().order_by('-batch_name')  # Optional: Change the ordering as needed
+    except Exception as e:
+        messages.error(request, f"Error fetching batches: {str(e)}")
+        batches = []
+
+    return render(request, 'director/view_batch.html', {
+        'batches': batches,
+        'director': director
+    })
+
+def goto_manage_batch(request,batch_id):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        messages.error(request, "Director not found. Please log in again.")
+        return redirect('open_director_login')
+
+    try:
+        director = College.objects.get(id=director_id)
+    except College.DoesNotExist:
+        messages.error(request, "Director not found.")
+        return redirect('open_director_login')
+
+    try:
+        batch = get_object_or_404(Batch, id=batch_id)
+    except Batch.DoesNotExist:
+        messages.error(request, "Batch not found.")
+        return redirect('view_batch')
+
+    return render(request, 'director/goto_manage_batch.html', {
+        'batch': batch,
+        'director': director
+    })
+
+def manage_batch(request, batch_id):
+    batch = get_object_or_404(Batch, id=batch_id)
+
+    current_year = datetime.now().year
+    min_year = current_year - 50
+
+    if request.method == "POST":
+        batch_name = request.POST.get("batch_name")
+
+        # Validate year format
+        try:
+            batch_year = int(batch_name)
+            if not (min_year <= batch_year <= current_year):
+                messages.error(request, f"Batch year must be between {min_year} and {current_year}.")
+                return render(request, 'director/goto_manage_batch.html', {'batch': batch})
+        except ValueError:
+            messages.error(request, "Invalid batch year. Please enter a valid number.")
+            return render(request, 'director/goto_manage_batch.html', {'batch': batch})
+
+        # Prevent duplicate batch names
+        if Batch.objects.exclude(id=batch.id).filter(batch_name=batch_year).exists():
+            messages.error(request, "Batch with this year already exists.")
+            return render(request, 'director/goto_manage_batch.html', {'batch': batch})
+
+        # Save changes
+        batch.batch_name = batch_year
+        batch.save()
+        messages.success(request, "Batch successfully updated.")
+        return redirect('view_batch')
+
+    return render(request, 'director/goto_manage_batch.html', {'batch': batch})
+
+def delete_batch(request, batch_id):
+    batch = get_object_or_404(Batch, id=batch_id)
+
+    try:
+        batch.delete()
+        messages.success(request, f"Batch '{batch.batch_name}' deleted successfully.")
+    except ProtectedError:
+        messages.error(request, f"Cannot delete batch '{batch.batch_name}' because it is used in one or more classes.")
+    except Exception as e:
+        messages.error(request, f"Failed to delete batch: {str(e)}")
+
+    return redirect('view_batch')
+
+# batch end 
+
+
+
+# class group start
+def create_class_form(request):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        messages.error(request, 'Director not found please login again')
+        return redirect('open_director_login')
+    
+    try:
+        director = College.objects.get(id = director_id)
+    except College.DoesNotExist:
+        messages.error(request, 'Dirctor not found')
+        return redirect('open_director_login')
+    
+    batches = Batch.objects.all().order_by('-batch_name')
+    branches = Branch.objects.select_related('branch_hod').order_by('branch_name')
+    
+    return render(request, 'director/create_class_form.html', {
+        'director' : director, 
+        'batches': batches, 
+        'branches': branches
+        })
+
+def create_class(request):
+    if request.method == 'POST':
+        batch_id = request.POST.get('batch')
+        branch_id = request.POST.get('branch')
+
+        batch = get_object_or_404(Batch, id = batch_id)
+        branch = get_object_or_404(Branch, id = branch_id)
+
+        if ClassGroup.objects.filter(batch = batch, branch = branch).exists():
+            messages.error(request, f'Class group with {batch.batch_name} and {branch.branch_name} aleady exists.')
+            return redirect('create_class_form')
+        
+        ClassGroup.objects.create(batch = batch, branch = branch)
+        messages.success(request, f"Class for {batch.batch_name} and {branch.branch_name} created successfully")
+        return redirect('view_class')
+    
+    return redirect('create_class_from')
+
+def view_class(request):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        messages.error(request, "Director not found. Please login again.")
+        return redirect('open_director_login')
+
+    try:
+        director = College.objects.get(id=director_id)
+    except College.DoesNotExist:
+        messages.error(request, "Director not found.")
+        return redirect('open_director_login')
+
+    class_groups = ClassGroup.objects.select_related('batch', 'branch', 'branch__branch_hod').order_by('batch__batch_name', 'branch__branch_name')
+
+    return render(request, 'director/view_class.html', {
+        'director': director,
+        'class_groups': class_groups,
+    })
+ 
+
+def delete_class(request, class_id):
+    class_group = get_object_or_404(ClassGroup, id=class_id)
+
+    try:
+        class_group.delete()
+        messages.success(request, f"Class '{class_group}' deleted successfully.")
+    except ProtectedError:
+        messages.error(request, "This class cannot be deleted because it is referenced by other data.")
+    except Exception as e:
+        messages.error(request, f"An error occurred while deleting the class: {str(e)}")
+
+    return redirect('view_class')

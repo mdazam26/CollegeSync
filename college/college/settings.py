@@ -64,11 +64,15 @@ SHARED_APPS = [
     'django.contrib.admin',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
 ]
 
 TENANT_APPS = [
-    'director',  # Add tenant-specific apps here
-    # 'super',      
+    'director',  # Add tenant-specific apps here      
+    'teacher',
+    'student',
+    'attendance',
+    'schedule',
 ]
 
 INSTALLED_APPS = list(set(SHARED_APPS + TENANT_APPS))

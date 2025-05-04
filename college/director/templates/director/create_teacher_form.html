@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Create Branch</title>
+    <title>Create Teacher</title>
     <style>
       :root {
         --primary: #007bff;
@@ -37,7 +37,6 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
 
       .header p {
@@ -62,7 +61,6 @@
 
       .container {
         flex: 1;
-        /* max-width: 600px; */
         width: 60%;
         margin: 40px auto;
         background: var(--card-bg);
@@ -84,7 +82,7 @@
         margin-bottom: 6px;
       }
 
-      input[type="text"],
+      input,
       select {
         width: 100%;
         padding: 10px;
@@ -119,16 +117,9 @@
         color: var(--danger);
       }
 
-      .director-name {
-        text-align: center;
-        font-weight: bold;
-        margin-bottom: 20px;
-        font-size: 1.1rem;
-      }
-
       .nav-buttons {
         text-align: center;
-        margin-top: 25px;
+        margin-top: 30px;
       }
 
       .nav-buttons a {
@@ -156,16 +147,13 @@
 
       @media (max-width: 600px) {
         .container {
+          width: 90%;
           padding: 20px;
-        }
-
-        .nav-buttons a {
-          padding: 8px 12px;
-          font-size: 14px;
         }
 
         .header {
           flex-direction: column;
+          align-items: flex-start;
           gap: 10px;
         }
 
@@ -182,9 +170,9 @@
       <a href="{% url 'director_logout' %}" class="logout-btn">Logout</a>
     </header>
 
-    <!-- Main Container -->
+    <!-- Main Form Container -->
     <div class="container">
-      <h1>Create a New Branch</h1>
+      <h1>Create Teacher</h1>
 
       {% if messages %}
       <div class="messages">
@@ -194,33 +182,47 @@
       </div>
       {% endif %}
 
-      <form method="post" action="{% url 'create_branch' %}">
+      <form method="post" action="{% url 'create_teacher' %}">
         {% csrf_token %}
+        <label for="teacher_name">Teacher Name</label>
+        <input type="text" id="teacher_name" name="teacher_name" required />
 
-        <!-- Branch Name -->
-        <label for="branch_name">Branch Name:</label>
-        <input type="text" id="branch_name" name="branch_name" required />
+        <label for="teacher_username">Teacher Username</label>
+        <input
+          type="text"
+          id="teacher_username"
+          name="teacher_username"
+          required
+        />
 
-        <!-- HOD Selection (Optional) -->
-        <label for="branch_hod">Assign HOD (Optional):</label>
-        <select id="branch_hod" name="branch_hod">
-          <option value="" selected>None</option>
+        <label for="teacher_password">Teacher Password</label>
+        <input
+          type="password"
+          id="teacher_password"
+          name="teacher_password"
+          required
+        />
 
-          {% for teacher in teachers %}
-          <option value="{{ teacher.id }}">{{ teacher.teacher_name }}</option>
-          {% endfor %}
-          
+        <label for="teacher_email">Teacher Email</label>
+        <input type="email" id="teacher_email" name="teacher_email" />
+
+        <label for="teacher_phone">Teacher Phone Number</label>
+        <input type="text" id="teacher_phone" name="teacher_phone" />
+
+        <label for="is_hod">Is HOD</label>
+        <select name="is_hod" id="is_hod">
+          <option value="true">Yes</option>
+          <option value="false">No</option>
         </select>
 
-        <!-- Submit Button -->
-        <button type="submit">Create Branch</button>
+        <button type="submit">Submit</button>
       </form>
     </div>
 
-    <!-- Navigation Buttons BELOW the form -->
+    <!-- Navigation Buttons -->
     <div class="nav-buttons">
       <a href="{% url 'director_dashboard' %}">Dashboard</a>
-      <a href="{% url 'view_branch' %}">View Branches</a>
+      <a href="{% url 'view_teacher' %}">View Teachers</a>
     </div>
 
     <!-- Footer -->

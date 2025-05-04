@@ -212,6 +212,7 @@
     <div class="container">
       <h1>Manage Batch: {{ batch.batch_name }}</h1>
 
+      <!-- Edit Batch Name Form -->
       <form method="POST" action="{% url 'manage_batch' batch.id %}">
         {% csrf_token %}
         <label for="batch_name">Batch Year:</label>
@@ -224,26 +225,7 @@
         <button type="submit" class="button save">Save</button>
       </form>
 
-      <h2>Associated Branches</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Branch Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% if branches %} {% for branch in branches %}
-          <tr>
-            <td>{{ branch.branch_name }}</td>
-          </tr>
-          {% endfor %} {% else %}
-          <tr>
-            <td colspan="1">No branches yet.</td>
-          </tr>
-          {% endif %}
-        </tbody>
-      </table>
-
+      <!-- Action Buttons -->
       <div style="text-align: center; margin-top: 30px">
         <a
           href="{% url 'delete_batch' batch.id %}"
@@ -255,6 +237,7 @@
         <a href="{% url 'view_batch' %}" class="button back">Back to Batches</a>
       </div>
 
+      <!-- Flash Messages -->
       <div class="messages">
         {% if messages %} {% for message in messages %}
         <p>{{ message }}</p>

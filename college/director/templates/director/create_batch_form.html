@@ -178,20 +178,28 @@
 
     <div class="container">
       <h1>Create New Batch</h1>
+
+      <!-- Batch Creation Form -->
       <form action="{% url 'create_batch' %}" method="POST">
         {% csrf_token %}
+
         <div class="input-wrapper">
           <label for="batch_name">Batch Year:</label>
           <input
             type="number"
             name="batch_name"
+            id="batch_name"
             required
             placeholder="Enter Batch Year (e.g., 2025)"
+            min="2000"
+            max="2100"
           />
         </div>
+
         <button type="submit">Submit</button>
       </form>
 
+      <!-- Navigation Links -->
       <div class="nav-links">
         <a href="{% url 'director_dashboard' %}" class="nav-btn"
           >← Back to Dashboard</a
@@ -199,11 +207,14 @@
         <a href="{% url 'view_batch' %}" class="nav-btn">View All Batches →</a>
       </div>
 
+      <!-- Django Messages -->
+      {% if messages %}
       <div class="messages">
-        {% if messages %} {% for message in messages %}
-        <p>{{ message }}</p>
-        {% endfor %} {% endif %}
+        {% for message in messages %}
+        <p class="{{ message.tags }}">{{ message }}</p>
+        {% endfor %}
       </div>
+      {% endif %}
     </div>
 
     <footer>

@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manage Branch</title>
+    <title>Manage Teacher</title>
     <style>
       :root {
         --primary: #007bff; /* Dark blue color for header and footer */
         --secondary: #2c3e50;
         --priary-hover: #0056b3;
-    
-        --btn-color : #35a85b;
+
+        --btn-color: #35a85b;
         --btn-color2: #cb7a58;
         --danger: #dc3545;
         --background: #f8f9fa;
@@ -134,8 +134,7 @@
         flex-wrap: wrap;
       }
 
-
-      .btn1{
+      .btn1 {
         padding: 10px 20px;
         background-color: var(--btn-color);
         color: var(--white);
@@ -145,7 +144,7 @@
         transition: background-color 0.3s;
         margin-bottom: 10px;
       }
-      .btn1:hover{
+      .btn1:hover {
         background-color: rgb(73, 175, 73);
       }
 
@@ -163,7 +162,7 @@
         align-items: center;
         justify-content: center;
       }
-      .btn2:hover{
+      .btn2:hover {
         background-color: rgb(6, 6, 6);
         color: white;
       }
@@ -181,7 +180,7 @@
         margin-bottom: 10px;
         background-color: var(--danger);
       }
-      .btn-danger:hover{
+      .btn-danger:hover {
         background-color: rgb(184, 77, 77);
       }
 
@@ -218,66 +217,122 @@
     <!-- Header -->
     <header>
       <div>
-        <p class="director-name">Welcome: <strong>{{ director.institute_name }} </strong> </p>
+        <p class="director-name">
+          Welcome: <strong>{{ director.institute_name }}</strong>
+        </p>
       </div>
       <a href="{% url 'director_logout' %}" class="logout-btn">Logout</a>
     </header>
 
     <!-- Main Content -->
     <div class="container">
+      <h3>Manage Teacher: {{ teacher.teacher_name }}</h3>
 
-      <h3>Update {{ branch.branch_name }} Details:</h3>
+      <form method="POST" action="{% url 'manage_teacher' teacher.id %}">
+        {% csrf_token %}
 
-  {% if messages %}
-  <div class="messages">
-    {% for message in messages %}
-    <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
-    {% endfor %}
-  </div>
-  {% endif %}
+        <!-- Name -->
+        <label for="teacher_name">Teacher Name:</label>
+        <input
+          type="text"
+          name="teacher_name"
+          id="teacher_name"
+          value="{{ teacher.teacher_name }}"
+          required
+        />
 
-  <form method="POST" action="{% url 'manage_branch' branch.id %}">
-    {% csrf_token %}
+        <!-- Username -->
+        <label for="teacher_username">Username:</label>
+        <input
+          type="text"
+          name="teacher_username"
+          id="teacher_username"
+          value="{{ teacher.teacher_username }}"
+          required
+        />
 
-    <!-- Branch Name -->
-    <label for="branch_name">Branch Name:</label>
-    <input type="text" id="branch_name" name="branch_name" value="{{ branch.branch_name }}" required />
+        <!-- Email -->
+        <label for="teacher_email">Email:</label>
+        <input
+          type="email"
+          name="teacher_email"
+          id="teacher_email"
+          value="{{ teacher.teacher_email }}"
+        />
 
-    <!-- Current HOD -->
-    {% if branch.branch_hod %}
-    <label>Current HOD:</label>
-    <input type="text" value="{{ branch.branch_hod.teacher_name }}" readonly />
-    {% endif %}
+        <!-- Phone -->
+        <label for="teacher_phone">Phone:</label>
+        <input
+          type="text"
+          name="teacher_phone"
+          id="teacher_phone"
+          value="{{ teacher.teacher_phone }}"
+        />
 
-    <!-- Update HOD -->
-    <label for="branch_hod">Update HOD:</label>
-    <select name="branch_hod" id="branch_hod">
-      <option value="">None</option>
-      {% for h in hods %}
-      <option value="{{ h.id }}" {% if branch.branch_hod and h.id == branch.branch_hod.id %}selected{% endif %}>
-        {{ h.teacher_name }}
-      </option>
-      {% endfor %}
-    </select>
+        <!-- Branch (readonly) -->
+        <label for="branch_name">Branch:</label>
+        <input
+          type="text"
+          name="branch_name"
+          id="branch_name"
+          value="{{ branch_name }}"
+          readonly
+        />
 
-    <!-- Submit Button -->
-    <button type="submit">Update Branch</button>
-  </form>
+        <label for="is_hod_display">Is HOD:</label>
+        <input
+          type="text"
+          id="is_hod_display"
+          name="is_hod_display"
+          value="{% if teacher.is_hod %}Yes{% else %}No{% endif %}"
+          readonly
+        />
 
-      <!-- Links for Creating Batch or HOD -->
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              id="is_hod"
+              name="is_hod"
+              {% if teacher.is_hod %}checked{% else %} unchecked {% endif %}
+            />
+            Is HOD
+          </label>
+        </div>
+
+        <label for="teacher_password"
+          >Change Password (leave blank to keep current):</label
+        >
+        <input
+          type="password"
+          id="teacher_password"
+          name="teacher_password"
+          placeholder="Enter new password if changing"
+        />
+
+        <!-- Submit Button -->
+        <button type="submit">Update Teacher</button>
+      </form>
+
+      <!-- Navigation -->
       <div class="nav-buttons">
-        <a href="{% url 'create_batch_form' %}" class="btn1">Create Batch</a>
-        <a href="{% url 'create_teacher_form' %}" class="btn1">Create Teacher</a>
-        <a href="{% url 'create_branch' %}" class="btn1">Create New Branch</a>
-        <a href="{% url 'view_branch' %}" class="btn1">View all Branch</a>
+        <a href="{% url 'create_teacher_form' %}" class="btn1"
+          >Create Teacher</a
+        >
+        <a href="{% url 'view_teacher' %}" class="btn1">View All Teachers</a>
       </div>
 
-      <!-- Links for Deleting Branch and Returning to Branch List -->
       <div class="nav-buttons">
-        <a href="{% url 'delete_branch' branch.id %}" class="btn-danger"
-          onclick="return confirm('Are you sure you want to delete this branch?');" >Delete Branch</a>
-          <a href="{% url 'view_branch' %}" class="btn2" title="Back to Branches">🔙</a>
-
+        <a
+          href="{% url 'delete_teacher' teacher.id %}"
+          class="btn-danger"
+          onclick="return confirm('Are you sure you want to delete this teacher?');"
+        >
+          Delete Teacher
+        </a>
+        <a href="{% url 'view_teacher' %}" class="btn2" title="Back to Teachers"
+          >🔙</a
+        >
       </div>
     </div>
 

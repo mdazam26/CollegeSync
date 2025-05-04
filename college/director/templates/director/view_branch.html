@@ -188,12 +188,11 @@
     <!-- Main Content -->
     <div class="container">
       <h3>All Branches</h3>
-
+    
       <table>
         <thead>
           <tr>
             <th>Branch Name</th>
-            <th>Batch</th>
             <th>HOD</th>
             <th>Actions</th>
           </tr>
@@ -203,29 +202,25 @@
           <tr>
             <td>{{ branch.branch_name }}</td>
             <td>
-              {% if branch.batch %} {{ branch.batch.batch_name }} {% else %} Not
-              assigned {% endif %}
+              {% if branch.branch_hod %}
+                {{ branch.branch_hod.teacher_name }}
+              {% else %}
+                Not assigned
+              {% endif %}
             </td>
             <td>
-              {% if branch.hod %} {{ branch.hod.hod_name }} {% else %} Not
-              assigned {% endif %}
-            </td>
-            <td>
-              <a
-                href="{% url 'goto_manage_branch' branch.id %}"
-                class="btn btn-primary"
-                >Manage</a
-              >
+              <a href="{% url 'goto_manage_branch' branch.id %}" class="btn btn-primary">Manage</a>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="4">No branches found.</td>
+            <td colspan="3">No branches found.</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
+    
 
     <!-- Footer -->
     <footer>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Create Branch</title>
+    <title>Create Teacher</title>
     <style>
       :root {
         --primary: #007bff;
@@ -37,7 +37,6 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
 
       .header p {
@@ -62,7 +61,6 @@
 
       .container {
         flex: 1;
-        /* max-width: 600px; */
         width: 60%;
         margin: 40px auto;
         background: var(--card-bg);
@@ -84,7 +82,7 @@
         margin-bottom: 6px;
       }
 
-      input[type="text"],
+      input,
       select {
         width: 100%;
         padding: 10px;
@@ -119,16 +117,9 @@
         color: var(--danger);
       }
 
-      .director-name {
-        text-align: center;
-        font-weight: bold;
-        margin-bottom: 20px;
-        font-size: 1.1rem;
-      }
-
       .nav-buttons {
         text-align: center;
-        margin-top: 25px;
+        margin-top: 30px;
       }
 
       .nav-buttons a {
@@ -156,16 +147,13 @@
 
       @media (max-width: 600px) {
         .container {
+          width: 90%;
           padding: 20px;
-        }
-
-        .nav-buttons a {
-          padding: 8px 12px;
-          font-size: 14px;
         }
 
         .header {
           flex-direction: column;
+          align-items: flex-start;
           gap: 10px;
         }
 
@@ -182,45 +170,45 @@
       <a href="{% url 'director_logout' %}" class="logout-btn">Logout</a>
     </header>
 
-    <!-- Main Container -->
+    <!-- Main Form Container -->
     <div class="container">
-      <h1>Create a New Branch</h1>
+      <h1>Create New Class</h1>
 
-      {% if messages %}
-      <div class="messages">
-        {% for message in messages %}
-        <p>{{ message }}</p>
-        {% endfor %}
-      </div>
-      {% endif %}
-
-      <form method="post" action="{% url 'create_branch' %}">
+      <form method="POST" action="{% url 'create_class' %}">
         {% csrf_token %}
+        <div class="input-wrapper">
+          <label for="batch">Select Batch:</label>
+          <select name="batch" required>
+            {% for batch in batches %}
+            <option value="{{ batch.id }}">{{ batch.batch_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
 
-        <!-- Branch Name -->
-        <label for="branch_name">Branch Name:</label>
-        <input type="text" id="branch_name" name="branch_name" required />
+        <div class="input-wrapper">
+          <label for="branch">Select Branch:</label>
+          <select name="branch" required>
+            {% for branch in branches %}
+            <option value="{{ branch.id }}">{{ branch.branch_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
 
-        <!-- HOD Selection (Optional) -->
-        <label for="branch_hod">Assign HOD (Optional):</label>
-        <select id="branch_hod" name="branch_hod">
-          <option value="" selected>None</option>
-
-          {% for teacher in teachers %}
-          <option value="{{ teacher.id }}">{{ teacher.teacher_name }}</option>
-          {% endfor %}
-          
-        </select>
-
-        <!-- Submit Button -->
-        <button type="submit">Create Branch</button>
+        <button type="submit">Create Class</button>
       </form>
+
+      <div class="messages">
+        {% if messages %} {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %} {% endif %}
+      </div>
+
+
+      <div class="nav-buttons">
+      <a href="{% url 'director_dashboard' %}">Dashboard</a>
+      <a href="{% url 'view_class' %}">View Teachers</a>
     </div>
 
-    <!-- Navigation Buttons BELOW the form -->
-    <div class="nav-buttons">
-      <a href="{% url 'director_dashboard' %}">Dashboard</a>
-      <a href="{% url 'view_branch' %}">View Branches</a>
     </div>
 
     <!-- Footer -->

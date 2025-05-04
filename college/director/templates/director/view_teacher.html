@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Teachers</title>
+    <style>
+      :root {
+        --primary-color: #007bff;
+        --danger-color: #dc3545;
+        --secondary-color: #2c3e50;
+        --light-bg: #f4f6f9;
+        --white: #ffffff;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--light-bg);
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      header {
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      header .director-name {
+        flex-grow: 1;
+        text-align: left;
+      }
+
+      header .logout-button {
+        background-color: var(--danger-color);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.3s;
+      }
+
+      header .logout-button:hover {
+        background-color: darkred;
+      }
+
+      .container {
+        width: 80%;
+        margin: 30px auto;
+        background: var(--white);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        color: var(--secondary-color);
+        /* margin-bottom: 20px; */
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+
+      th,
+      td {
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        text-align: center;
+      }
+
+      th {
+        background-color: #f2f2f2;
+        color: #333;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .messages {
+        text-align: center;
+        margin-top: 20px;
+        color: green;
+        font-weight: bold;
+      }
+
+      .actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .actions a {
+        margin-right: 20px;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        background-color: var(--secondary-color);
+        padding: 10px 15px;
+        border-radius: 10px;
+      }
+
+      .actions a:hover {
+        text-decoration: none;
+        /* color: red; */
+        background-color: #5a7c9e;
+      }
+
+      footer {
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 14px;
+        margin-top: auto;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          width: 90%;
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="director-name">
+        <h2 style="color: white">Welcome, {{ director.admin_name }}</h2>
+      </div>
+      <div>
+        <a href="{% url 'director_logout' %}" class="logout-button">Logout</a>
+      </div>
+    </header>
+
+    <div class="container">
+      <h2>HODs</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Is HOD</th>
+            <th>Branch</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if hods %} {% for hod in hods %}
+          <tr>
+            <td>{{ hod.teacher_name }}</td>
+            <td>{{ hod.teacher_username }}</td>
+            <td>Yes</td>
+            <td>{{ hod.branch_name }}</td>
+            <td>
+              <a href="{% url 'goto_manage_teacher' hod.id %}">Manage</a>
+            </td>
+          </tr>
+          {% endfor %} {% else %}
+          <tr>
+            <td colspan="5" style="text-align: center">No HODs found.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+      <h2>Other Faculty</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if teachers %} {% for teacher in teachers %}
+          <tr>
+            <td>{{ teacher.teacher_name }}</td>
+            <td>{{ teacher.teacher_username }}</td>
+            <td>
+              <a href="{% url 'goto_manage_teacher' teacher.id %}">Manage</a>
+            </td>
+          </tr>
+          {% endfor %} {% else %}
+          <tr>
+            <td colspan="3" style="text-align: center">No teachers found.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+      <div class="actions">
+        <a href="{% url 'create_teacher_form' %}" class="btn">Create Teacher</a>
+        <a href="{% url 'director_dashboard' %}" class="btn">Dashboard</a>
+      </div>
+
+      {% if messages %}
+      <div class="messages">
+        <ul>
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+
+    <footer>
+      &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+    </footer>
+  </body>
+</html>

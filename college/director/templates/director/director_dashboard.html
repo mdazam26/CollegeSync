@@ -147,14 +147,24 @@
 
     <div class="container">
       <div class="dashboard-grid">
-        <a href="{% url 'create_hod' %}" class="card-link">
+        <a href="{% url 'create_teacher_form' %}" class="card-link">
           <span class="icon">👤</span>
-          Create HOD
+          Create Teacher
         </a>
-        <a href="{% url 'view_hod' %}" class="card-link">
+        <a href="{% url 'view_teacher' %}" class="card-link">
           <span class="icon">📋</span>
-          View HODs
+          View Teachers
         </a>
+
+        <a href="{% url 'create_branch_form' %}" class="card-link">
+          <span class="icon">🏛️</span>
+          Create Branch
+        </a>
+        <a href="{% url 'view_branch' %}" class="card-link">
+          <span class="icon">🏷️</span>
+          View Branches
+        </a>
+
         <a href="{% url 'create_batch_form' %}" class="card-link">
           <span class="icon">🗂️</span>
           Create Batch
@@ -163,13 +173,14 @@
           <span class="icon">📦</span>
           View Batches
         </a>
-        <a href="{% url 'create_branch_form' %}" class="card-link">
-          <span class="icon">🏛️</span>
-          Create Branch
+
+        <a href="{% url 'create_class_form' %}" class="card-link">
+          <span class="icon">🏫</span>
+          Create Class
         </a>
-        <a href="{% url 'view_branch' %}" class="card-link">
-          <span class="icon">🏷️</span>
-          View Branches
+        <a href="{% url 'view_class' %}" class="card-link">
+          <span class="icon">📚</span>
+          View Classes
         </a>
         <a href="#" class="card-link calendar-btn">
           <span class="icon">🗓️</span>

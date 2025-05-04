@@ -6,19 +6,21 @@ urlpatterns = [
     path('',views.index),
 
 
-    path('open_login/', views.open_login, name='open_login'),
+    path('open_director_login/', views.open_director_login, name='open_director_login'),
 
 
     path('director_login/', views.director_login, name='director_login'),
 
     path('director_dashboard/', views.director_dashboard, name='director_dashboard'),
+    path('director_logout', views.director_logout, name='director_logout'),
 
-
-    path('create_hod_form/', views.create_hod_form, name='create_hod_form'),
-    path('create_hod/', views.create_hod, name='create_hod'),
-    path('manage_hod/', views.manage_hod, name='manage_hod'),
-    path('view_hod/', views.view_hod, name='view_hod'),
-
+    path('create_teacher_form/', views.create_teacher_form, name='create_teacher_form'),
+    path('create_teacher/', views.create_teacher, name='create_teacher'),
+    path('view_teacher/', views.view_teacher, name='view_teacher'),
+    path('goto_manage_teacher/<int:teacher_id>/', views.goto_manage_teacher, name='goto_manage_teacher'),
+    path('manage_teacher/<int:teacher_id>/', views.manage_teacher, name='manage_teacher'),
+    path('delete_teacher/<int:teacher_id>/', views.delete_teacher, name='delete_teacher'),
+    
 
     path('create_batch_form/', views.create_batch_form, name='create_batch_form'),
     path('create_batch/', views.create_batch, name='create_batch'), 
@@ -35,11 +37,13 @@ urlpatterns = [
     path('manage_branch/<int:branch_id>', views.manage_branch, name='manage_branch'),
     path('delete_branch/<int:branch_id>/', views.delete_branch, name='delete_branch'),
 
-    # View details + actions
-    path('manage_branch/<int:branch_id>/', views.manage_branch, name='manage_branch'), # Edit branch details
-    path('delete_branch/<int:branch_id>/', views.delete_branch, name='delete_branch'), # Delete branch
+    
+    path('create_class_form/', views.create_class_form, name='create_class_form'),
+    path('create_class/', views.create_class, name='create_class'),
+    path('view_class/', views.view_class, name='view_class'),
+    path('delete_class/<int:class_id>/', views.delete_class, name='delete_class'),
+ 
 
-
-    path('director_logout', views.director_logout, name='director_logout'),
+    
 
 ]
