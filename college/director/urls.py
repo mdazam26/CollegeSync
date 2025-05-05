@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 
@@ -44,6 +44,6 @@ urlpatterns = [
     path('delete_class/<int:class_id>/', views.delete_class, name='delete_class'),
  
 
-    
+    # path('create_student_from/', include('student.urls'))
 
 ]

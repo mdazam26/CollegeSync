@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to CollegeSync</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #34495e;
+        }
+        .cta {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .cta a {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .cta a:hover {
+            background-color: #2980b9;
+        }
+        .guide {
+            margin-top: 40px;
+            padding: 20px;
+            background: #ecf0f1;
+            border-left: 5px solid #3498db;
+        }
+        .guide h3 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Welcome to CollegeSync</h1>
+        <p>
+            CollegeSync is a modern, multi-tenant college management system that streamlines academic and administrative tasks. 
+            Whether you're an institution administrator, head of department, or faculty member, CollegeSync helps you efficiently manage:
+        </p>
+        <ul>
+            <li>Student records and attendance</li>
+            <li>Branch and semester configurations</li>
+            <li>Class scheduling</li>
+            <li>Subject management</li>
+            <li>PDF generation for results and reports</li>
+        </ul>
+
+        <div class="guide">
+            <h3>How to Get Started</h3>
+            <ol>
+                <li>Click on the <strong>"Start CollegeSync"</strong> button below.</li>
+                <li>Enter your desired subdomain (e.g., <code>macet</code>, <code>test1</code>).</li>
+                <li>You will be redirected to your college's dashboard based on the subdomain.</li>
+                <li>If you're a new user, use the form to create a tenant domain first via localhost.</li>
+            </ol>
+            <p><strong>Note:</strong> This system supports subdomain-based routing. You must use URLs like <code>test1.localhost:8000</code> after setup.</p>
+        </div>
+
+        <div class="cta">
+            <a href="{% url 'tenant_form' %}" target="_blank">Start CollegeSync</a>
+        </div>
+    </div>
+
+</body>
+</html>

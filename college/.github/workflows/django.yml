@@ -1,0 +1,50 @@
+name: Deploy Django Project
+
+on:
+  push:
+    branches:
+      - main  # You can change this to your default branch name
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'  # Or the version you're using
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      # Set up Docker
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      # Build and run the Docker container
+      - name: Build and run Docker container
+        run: |
+          docker-compose -f docker-compose.yml up --build -d
+
+      # Optional: Run tests if needed
+      - name: Run tests
+        run: |
+          source venv/bin/activate
+          python manage.py test
+
+      # Deploy: Push Docker container to your server (or use your preferred deployment service)
+      - name: Deploy to production
+        run: |
+          # Add commands to deploy (e.g., pushing to Heroku or AWS)
+          # Example for pushing Docker to a container registry:
+          docker push yourdockerhub/repository:tag

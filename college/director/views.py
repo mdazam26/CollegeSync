@@ -64,7 +64,7 @@ def director_login(request):
 
 def director_dashboard(request):
     if 'director_id' not in request.session:
-        return redirect('open_login')
+        return redirect('open_director_login')
     
     director_id = request.session['director_id']
 

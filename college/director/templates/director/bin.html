@@ -1,0 +1,49 @@
+<div class="container">
+    <div class="dashboard-grid">
+  
+      <!-- 1. Teacher Management -->
+      <div class="card-group">
+        <h3>Teacher Management</h3>
+        <a href="{% url 'create_teacher_form' %}" class="card-link"><span class="icon">👤</span>Create Teacher</a>
+        <a href="{% url 'view_teacher' %}" class="card-link"><span class="icon">📋</span>View Teachers</a>
+      </div>
+  
+      <!-- 2. Academic Structure -->
+      <div class="card-group">
+        <h3>Academic Structure</h3>
+        <a href="{% url 'create_branch_form' %}" class="card-link"><span class="icon">🏛️</span>Create Branch</a>
+        <a href="{% url 'view_branch' %}" class="card-link"><span class="icon">🏷️</span>View Branches</a>
+        <a href="{% url 'create_batch_form' %}" class="card-link"><span class="icon">🗂️</span>Create Batch</a>
+        <a href="{% url 'view_batch' %}" class="card-link"><span class="icon">📦</span>View Batches</a>
+        <a href="{% url 'create_class_form' %}" class="card-link"><span class="icon">🏫</span>Create Class</a>
+        <a href="{% url 'view_class' %}" class="card-link"><span class="icon">📚</span>View Classes</a>
+      </div>
+  
+      <!-- 3. Semester Setup -->
+      <div class="card-group">
+        <h3>Semester Setup</h3>
+        <a href="{% url 'create_semester_template' %}" class="card-link"><span class="icon">📖</span>Semester Templates</a>
+        <a href="{% url 'create_branch_semester' %}" class="card-link"><span class="icon">🧩</span>Branch Semesters</a>
+        <a href="{% url 'create_subject' %}" class="card-link"><span class="icon">📘</span>Create Subject</a>
+        <a href="{% url 'map_semester_subjects' %}" class="card-link"><span class="icon">📚</span>Semester Subjects</a>
+        <a href="{% url 'manage_active_classes' %}" class="card-link"><span class="icon">📅</span>Active Classes</a>
+      </div>
+  
+      <!-- 4. Student Management -->
+      <div class="card-group">
+        <h3>Student Management</h3>
+        <a href="{% url 'create_student' %}" class="card-link"><span class="icon">🧑‍🎓</span>Register Student</a>
+        <a href="{% url 'view_students' %}" class="card-link"><span class="icon">📋</span>View Students</a>
+        <a href="{% url 'assign_students_to_class' %}" class="card-link"><span class="icon">👥</span>Assign to Class</a>
+      </div>
+  
+      <!-- 5. Schedule & Calendar -->
+      <div class="card-group">
+        <h3>Schedule & Calendar</h3>
+        <a href="{% url 'create_calendar' %}" class="card-link"><span class="icon">🗓️</span>Create Academic Calendar</a>
+        <a href="{% url 'define_time_slots' %}" class="card-link"><span class="icon">⏰</span>Define Time Slots</a>
+      </div>
+  
+    </div>
+  </div>
+  

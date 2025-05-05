@@ -39,25 +39,11 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
-# INSTALLED_APPS = [
-#     'django_tenants',           
-#     'django.contrib.admin',
-#     'django.contrib.auth',
-#     'django.contrib.contenttypes',
-#     'django.contrib.sessions',
-#     'django.contrib.messages',
-#     'django.contrib.staticfiles',
-    
-#     'director',                
-#     'super',      
-#     'tenants'              
-# ]
-
-
 SHARED_APPS = [
     'django_tenants',  # Django tenants itself
     'tenants',
     'super',
+    'public',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.auth',
@@ -73,6 +59,7 @@ TENANT_APPS = [
     'student',
     'attendance',
     'schedule',
+    'semester',
 ]
 
 INSTALLED_APPS = list(set(SHARED_APPS + TENANT_APPS))
@@ -117,8 +104,12 @@ DATABASES = {
         'NAME': os.getenv("DB_NAME"),
         'USER': os.getenv("DB_USER"),
         'PASSWORD': os.getenv("DB_PASSWORD"),
-        'HOST': os.getenv("DB_HOST"),
-        'PORT': os.getenv("DB_PORT"),
+
+        # 'HOST': os.getenv("DB_HOST"),
+        # 'PORT': os.getenv("DB_PORT"),
+
+        'HOST': os.getenv('DB_HOST', 'db'),  # Correctly formatted with proper quotes
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
@@ -185,6 +176,8 @@ TENANT_DOMAIN_MODEL = 'tenants.TenantDomain'
 TENANT_MODEL = 'tenants.Tenant'  
 PUBLIC_SCHEMA_NAME = "public"
 ROOT_URLCONF = 'college.urls'
+PUBLIC_SCHEMA_URLCONF = 'public.urls'
+
 
 # Replace 'yourapp.Tenant' with the actual path to your Tenant model
 

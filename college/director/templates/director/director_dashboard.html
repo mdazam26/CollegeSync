@@ -1,196 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Director Dashboard | College Sync</title>
-    <style>
-      :root {
-        --primary-color: #4caf50;
-        --secondary-color: #2c3e50;
-        --light-bg: #eef2f7;
-        --card-bg: #ffffff;
-        --danger-color: #e53935;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Director Dashboard | College Sync</title>
+  <style>
+    :root {
+      --primary-color: #4caf50;
+      --secondary-color: #2c3e50;
+      --light-bg: #eef2f7;
+      --card-bg: #ffffff;
+      --danger-color: #e53935;
+    }
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background-color: var(--light-bg);
-        color: #333;
-        min-height: 100vh;
-        display: flex;
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-bg);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .header-left h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      font-size: 14px;
+    }
+
+    .welcome-text {
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    .logout-button {
+      background-color: var(--danger-color);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .logout-button:hover {
+      background-color: #c62828;
+    }
+
+    .container {
+      flex: 1;
+      width: 90%;
+      max-width: 1300px;
+      margin: 30px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .expandable-card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .expandable-header {
+      padding: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 16px;
+      background-color: #f7f9fc;
+    }
+
+    .expandable-header:hover {
+      background-color: #e0e6f1;
+    }
+
+    .expandable-links {
+      display: none;
+      flex-direction: column;
+      padding: 0 20px 20px;
+    }
+
+    .expandable-links a {
+      text-decoration: none;
+      padding: 10px 0;
+      color: #333;
+      border-bottom: 1px solid #eee;
+      transition: color 0.3s;
+    }
+
+    .expandable-links a:hover {
+      color: var(--primary-color);
+    }
+
+    .arrow {
+      transition: transform 0.3s ease;
+    }
+
+    .expanded .arrow {
+      transform: rotate(90deg);
+    }
+
+    .expanded .expandable-links {
+      display: flex;
+    }
+
+    footer {
+      background-color: var(--secondary-color);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .header-right {
         flex-direction: column;
-      }
-
-      header {
-        background-color: var(--secondary-color);
-        color: white;
-        padding: 20px 40px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 10px;
       }
 
       .header-left h1 {
-        font-size: 24px;
-        margin: 0;
+        font-size: 20px;
       }
-
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: 25px;
-        font-size: 14px;
-      }
-
-      .welcome-text {
-        text-align: right;
-        line-height: 1.4;
-      }
-
-      .logout-button {
-        background-color: var(--danger-color);
-        color: white;
-        padding: 8px 16px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: background-color 0.3s ease;
-      }
-
-      .logout-button:hover {
-        background-color: #c62828;
-      }
-
-      .container {
-        flex: 1;
-        width: 90%;
-        max-width: 1300px;
-        margin: 30px auto;
-      }
-
-      .dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 25px;
-      }
-
-      .card-link {
-        background-color: var(--card-bg);
-        text-decoration: none;
-        color: #333;
-        text-align: center;
-        padding: 30px 20px;
-        border-radius: 12px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s, box-shadow 0.2s;
-        font-weight: 600;
-      }
-
-      .card-link:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-      }
-
-      .card-link span.icon {
-        font-size: 28px;
-        margin-bottom: 12px;
-        display: block;
-        color: var(--primary-color);
-      }
-
-      .calendar-btn span.icon {
-        color: #3f51b5;
-      }
-
-      footer {
-        background-color: var(--secondary-color);
-        color: white;
-        text-align: center;
-        padding: 15px;
-        font-size: 14px;
-      }
-
-      @media (max-width: 600px) {
-        .header-right {
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 10px;
-        }
-
-        .header-left h1 {
-          font-size: 20px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <div class="header-left">
-        <h1>College Sync - Director Dashboard</h1>
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <h1>College Sync - Director Dashboard</h1>
+    </div>
+    <div class="header-right">
+      <div class="welcome-text">
+        <strong>Welcome, {{ director.admin_name }}</strong><br />
+        Valid Until: {{ director.paid_until|date:"F j, Y" }}
       </div>
-      <div class="header-right">
-        <div class="welcome-text">
-          <strong>Welcome, {{ director.admin_name }}</strong><br />
-          Valid Until: {{ director.paid_until|date:"F j, Y" }}
-        </div>
-        <a href="{% url 'director_logout' %}" class="logout-button">Logout</a>
+      <a href="{% url 'director_logout' %}" class="logout-button">Logout</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- 1. Teacher Management -->
+    <div class="expandable-card" id="teacherGroup">
+      <div class="expandable-header" onclick="toggleGroup('teacherGroup')">
+        👨‍🏫 Teacher Management <span class="arrow">▶</span>
       </div>
-    </header>
-
-    <div class="container">
-      <div class="dashboard-grid">
-        <a href="{% url 'create_teacher_form' %}" class="card-link">
-          <span class="icon">👤</span>
-          Create Teacher
-        </a>
-        <a href="{% url 'view_teacher' %}" class="card-link">
-          <span class="icon">📋</span>
-          View Teachers
-        </a>
-
-        <a href="{% url 'create_branch_form' %}" class="card-link">
-          <span class="icon">🏛️</span>
-          Create Branch
-        </a>
-        <a href="{% url 'view_branch' %}" class="card-link">
-          <span class="icon">🏷️</span>
-          View Branches
-        </a>
-
-        <a href="{% url 'create_batch_form' %}" class="card-link">
-          <span class="icon">🗂️</span>
-          Create Batch
-        </a>
-        <a href="{% url 'view_batch' %}" class="card-link">
-          <span class="icon">📦</span>
-          View Batches
-        </a>
-
-        <a href="{% url 'create_class_form' %}" class="card-link">
-          <span class="icon">🏫</span>
-          Create Class
-        </a>
-        <a href="{% url 'view_class' %}" class="card-link">
-          <span class="icon">📚</span>
-          View Classes
-        </a>
-        <a href="#" class="card-link calendar-btn">
-          <span class="icon">🗓️</span>
-          Calendar
-        </a>
+      <div class="expandable-links">
+        <a href="{% url 'create_teacher_form' %}">👤 Create Teacher</a>
+        <a href="{% url 'view_teacher' %}">📋 View Teachers</a>
       </div>
     </div>
 
-    <footer>
-      &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
-    </footer>
-  </body>
+    <!-- 2. Academic Structure -->
+    <div class="expandable-card" id="academicGroup">
+      <div class="expandable-header" onclick="toggleGroup('academicGroup')">
+        🏛️ Academic Structure <span class="arrow">▶</span>
+      </div>
+      <div class="expandable-links">
+        <a href="{% url 'create_branch_form' %}">🏢 Create Branch</a>
+        <a href="{% url 'view_branch' %}">🏷️ View Branches</a>
+        <a href="{% url 'create_batch_form' %}">🗂️ Create Batch</a>
+        <a href="{% url 'view_batch' %}">📦 View Batches</a>
+        <a href="{% url 'create_class_form' %}">🏫 Create Class</a>
+        <a href="{% url 'view_class' %}">📚 View Classes</a>
+      </div>
+    </div>
+
+    <!-- 3. Semester Setup -->
+    <div class="expandable-card" id="semesterGroup">
+      <div class="expandable-header" onclick="toggleGroup('semesterGroup')">
+        📘 Semester Setup <span class="arrow">▶</span>
+      </div>
+      <div class="expandable-links">
+        <a href="#">📄 Semester Templates</a>
+        <a href="#">📌 Branch Semesters</a>
+        <a href="#">📕 Create Subject</a>
+        <a href="#">🔗 Semester Subject</a>
+        <a href="#">🎓 Active Classes</a>
+      </div>
+    </div>
+
+    <!-- 4. Student Management -->
+    <div class="expandable-card" id="studentGroup">
+      <div class="expandable-header" onclick="toggleGroup('studentGroup')">
+        👩‍🎓 Student Management <span class="arrow">▶</span>
+      </div>
+      <div class="expandable-links">
+        <a href="#">🆕 Create Student</a>
+        <a href="#">👀 View Student</a>
+        <a href="#">🧩 Assign to Class</a>
+      </div>
+    </div>
+
+    <!-- 5. Schedule & Calendar -->
+    <div class="expandable-card" id="scheduleGroup">
+      <div class="expandable-header" onclick="toggleGroup('scheduleGroup')">
+        🗓️ Schedule & Calendar <span class="arrow">▶</span>
+      </div>
+      <div class="expandable-links">
+        <a href="#">📆 Create Academic Calendar</a>
+        <a href="#">⏰ Define Time Slots</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+  </footer>
+
+  <script>
+    function toggleGroup(id) {
+      const allCards = document.querySelectorAll(".expandable-card");
+      allCards.forEach(card => {
+        if (card.id !== id) {
+          card.classList.remove("expanded");
+        }
+      });
+
+      const current = document.getElementById(id);
+      current.classList.toggle("expanded");
+    }
+  </script>
+</body>
 </html>

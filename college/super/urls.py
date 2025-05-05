@@ -7,6 +7,9 @@ urlpatterns = [
  
     path('',views.main, name='name'),
 
+    # path('', views.global_index, name='global_index'),
+    # path('go-to-tenant/', views.go_to_tenant, name='go_to_tenant'),
+
     path('create/', views.create, name='create'),
     path('open_create/', views.open_create, name='open_create'),
 

@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from .views import domain_based_redirect
 
 urlpatterns = [
     path('admin/', admin.site.urls), # admin
@@ -28,6 +29,12 @@ urlpatterns = [
 
     path('super/', include('super.urls')), #its redirect to control for superuser
 
-    path('',include('director.urls')),  #its redirect to director
+    # path('',include('director.urls')),  
+    # path('', include('public.urls')),
+    # path('', views.domain_based_redirect, name='domain_based_redirect')
+
+    path('', domain_based_redirect),
+    path('public/', include('public.urls')),
+    path('director/', include('director.urls')),
    
 ]

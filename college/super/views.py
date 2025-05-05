@@ -11,6 +11,19 @@ from django.contrib.auth.models import User
 
 # Create your views here.
 
+# def global_index(request):
+#     return render(request, 'super/index.html') 
+
+# def go_to_tenant(request):
+#     if request.method == "POST":
+#         subdomain = request.POST.get('subdomain', '').strip()
+#         if subdomain:
+#             return redirect(f"http://{subdomain}.localhost:8000")
+#         return HttpResponse("Please enter a valid domain.")
+#     return redirect('global_index')
+
+
+
 def main(request):
     # return HttpResponse("super")
     return render(request, 'super/main.html')
