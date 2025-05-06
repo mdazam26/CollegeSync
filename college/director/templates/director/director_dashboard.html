@@ -197,39 +197,27 @@
 
     <!-- 3. Semester Setup -->
     <div class="expandable-card" id="semesterGroup">
-      <div class="expandable-header" onclick="toggleGroup('semesterGroup')">
-        📘 Semester Setup <span class="arrow">▶</span>
-      </div>
-      <div class="expandable-links">
-        <a href="#">📄 Semester Templates</a>
-        <a href="#">📌 Branch Semesters</a>
-        <a href="#">📕 Create Subject</a>
-        <a href="#">🔗 Semester Subject</a>
-        <a href="#">🎓 Active Classes</a>
-      </div>
+      <div class="expandable-header" >
+        <a href="{% url 'goto_semester' %}" style="text-decoration: none; color: black;">📘 Semester Setup</a>
+      </div>    
     </div>
 
     <!-- 4. Student Management -->
     <div class="expandable-card" id="studentGroup">
-      <div class="expandable-header" onclick="toggleGroup('studentGroup')">
-        👩‍🎓 Student Management <span class="arrow">▶</span>
+      <div class="expandable-header" >
+        <a href="{% url 'goto_student' %}" style="text-decoration: none; color: black;">👩‍🎓 Student Management</a>
+        
       </div>
-      <div class="expandable-links">
-        <a href="#">🆕 Create Student</a>
-        <a href="#">👀 View Student</a>
-        <a href="#">🧩 Assign to Class</a>
-      </div>
+    
     </div>
 
     <!-- 5. Schedule & Calendar -->
     <div class="expandable-card" id="scheduleGroup">
-      <div class="expandable-header" onclick="toggleGroup('scheduleGroup')">
-        🗓️ Schedule & Calendar <span class="arrow">▶</span>
+      <div class="expandable-header" >
+        <a href="{% url 'goto_schedule' %}" style="text-decoration: none; color: black;">🗓️ Schedule & Calendar </a>
+        
       </div>
-      <div class="expandable-links">
-        <a href="#">📆 Create Academic Calendar</a>
-        <a href="#">⏰ Define Time Slots</a>
-      </div>
+     
     </div>
   </div>
 

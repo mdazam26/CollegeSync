@@ -27,14 +27,18 @@ urlpatterns = [
   
 
 
-    path('super/', include('super.urls')), #its redirect to control for superuser
+    # path('super/', include('super.urls')),
 
     # path('',include('director.urls')),  
     # path('', include('public.urls')),
     # path('', views.domain_based_redirect, name='domain_based_redirect')
 
-    path('', domain_based_redirect),
+    path('', domain_based_redirect, name='public-home'),
     path('public/', include('public.urls')),
+    path('super/', include('super.urls')),
     path('director/', include('director.urls')),
+
+
+    # path('director/', include('director.urls')),
    
 ]

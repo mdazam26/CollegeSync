@@ -65,7 +65,8 @@ TENANT_APPS = [
 INSTALLED_APPS = list(set(SHARED_APPS + TENANT_APPS))
 
 MIDDLEWARE = [
-    'django_tenants.middleware.TenantMiddleware',
+    # 'django_tenants.middleware.TenantMiddleware',
+    'college.middleware.custom_tenant_middleware.CustomTenantMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

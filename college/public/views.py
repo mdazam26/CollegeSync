@@ -24,3 +24,10 @@ def go_to_tenant(request):
             return HttpResponse("Please enter a valid subdomain.", status=400)
     # If it's a GET request, render the form
     return render(request, 'index.html') 
+
+
+# def domain_based_redirect(request):
+#     host = request.get_host().split(':')[0]  
+#     if host == 'super.localhost':
+#         return redirect('/super/')
+#     return redirect('/public/')

@@ -44,6 +44,8 @@ urlpatterns = [
     path('delete_class/<int:class_id>/', views.delete_class, name='delete_class'),
  
 
-    # path('create_student_from/', include('student.urls'))
+    path('goto_student/', include('student.urls')),
+    path('goto_semester/', include('semester.urls')),
+    path('goto_schedule/', include('schedule.urls')),
 
 ]

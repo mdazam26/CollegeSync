@@ -1,28 +1,44 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse,  HttpResponseRedirect
 from django.urls import path, include
-
+from tenants.models import TenantDomain
 
 def start(request):
     return HttpResponse("This is in building phase")
 
+EXCLUDED_DOMAINS = ['super.localhost', 'localhost', '127.0.0.1']
 
 def domain_based_redirect(request):
     try:
-        host = request.get_host()
+        host = request.get_host().split(':')[0]  # Remove port if present
         print(f"Host: {host}")
 
-        if host.startswith("localhost"):
-            return redirect('/public/')  # Redirect to a path served by public.urls
+        # ✅ 1. Handle excluded/public domains FIRST
+        if host in EXCLUDED_DOMAINS:
+            if host == 'super.localhost':
+                print("Redirecting to super from public domain")
+                return redirect('/super/')
+            else:
+                print("Redirecting to public landing")
+                return redirect('/public/')  # optional public landing
 
-        if '.' in host:
-            subdomain = host.split('.')[0]
+        # ✅ 2. If not public, proceed with subdomain-based logic
+        subdomain = host.split('.')[0]
+        print(f"Subdomain: {subdomain}")
 
-            if subdomain in ['test1', 'macet', 'super']:
-                return redirect('/director/')  # Redirect to a path served by director.urls
+        print("Registered domains:", list(TenantDomain.objects.values_list('domain', flat=True)))
 
-        return HttpResponse("Invalid domain", status=404)
+        tenant_domain = TenantDomain.objects.filter(domain=host).first()
+        if tenant_domain:
+            if subdomain == 'super':
+                print("Redirecting to super (shouldn't reach here)")
+                return redirect('/super/')
+            else:
+                print("Redirecting to director")
+                return redirect('/director/')
+        else:
+            return HttpResponse("This domain is not registered with CollegeSync.", status=404)
 
     except Exception as e:
         print(f"Error in domain_based_redirect: {e}")
-        return HttpResponse("An error occurred while processing the domain.", status=500)
+        return HttpResponse("An internal error occurred.", status=500)
