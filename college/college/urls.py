@@ -18,6 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 from . import views
 from .views import domain_based_redirect
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('admin/', admin.site.urls), # admin
@@ -27,18 +30,15 @@ urlpatterns = [
   
 
 
-    # path('super/', include('super.urls')),
-
-    # path('',include('director.urls')),  
-    # path('', include('public.urls')),
-    # path('', views.domain_based_redirect, name='domain_based_redirect')
-
     path('', domain_based_redirect, name='public-home'),
     path('public/', include('public.urls')),
     path('super/', include('super.urls')),
     path('director/', include('director.urls')),
 
 
-    # path('director/', include('director.urls')),
+
    
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

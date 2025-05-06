@@ -1,0 +1,55 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Django
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+staticfiles/
+local_settings.py
+
+# Environment variables
+.env
+*.env
+.env.*
+
+# Docker
+*.pid
+*.seed
+*.pid.lock
+docker-compose.override.yml
+docker-compose.dev.yml
+.docker/
+.dockerignore
+
+# Virtual Environments
+venv/
+.venv/
+ENV/
+env/
+
+# IDEs and Editors
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Pytest / Coverage
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+.cache/
+
+# PostgreSQL dump files
+*.sql
+*.dump
