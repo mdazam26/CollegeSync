@@ -23,7 +23,7 @@
     header {
       background: var(--dark);
       color: white;
-      padding: 20px 40px;
+      padding: 10px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -46,6 +46,7 @@
     .logout-button:hover {
       background-color: #c0392b;
     }
+
 
     .container {
       max-width: 1100px;
@@ -102,8 +103,14 @@
 <body>
 
   <header>
-    <h1>Admin Panel - Semester Setup</h1>
-    <a href="#" class="logout-button">Logout</a>
+    <div>
+      <h3>Welcome {{director.admin_name}}</h3>
+    </div>
+    <div style="display: flex; gap: .8rem;">
+      <a href="{% url 'director_dashboard' %}" class="logout-button">Back</a>
+      <a href="{% url 'director_logout' %}" class="logout-button">Logout</a>
+      
+    </div>
   </header>
 
   <div class="container">

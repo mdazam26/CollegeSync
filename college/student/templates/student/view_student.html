@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Students</title>
+    <style>
+      :root {
+        --primary-color: #007bff;
+        --danger-color: #dc3545;
+        --secondary-color: #2c3e50;
+        --light-bg: #f4f6f9;
+        --white: #ffffff;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--light-bg);
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .header {
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .dashboard-btn {
+        background-color: #1a242f;
+        padding: 8px 15px;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: bold;
+        margin-right: 20px;
+        transition: background-color 0.3s ease;
+      }
+
+      .dashboard-btn:hover {
+        background-color: #111920;
+      }
+
+      .header-middle {
+        font-size: 20px;
+        flex: 1;
+        text-align: center;
+      }
+
+      .header-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      .logout-btn {
+        background-color: var(--danger-color);
+        padding: 8px 15px;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+      }
+
+      .logout-btn:hover {
+        background-color: #c62828;
+      }
+
+      .container {
+        width: 80%;
+        margin: 30px auto;
+        background: var(--white);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        color: var(--secondary-color);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+
+      th,
+      td {
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        text-align: center;
+      }
+
+      th {
+        background-color: #f2f2f2;
+        color: #333;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .student-photo {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .actions a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        background-color: var(--secondary-color);
+        padding: 10px 15px;
+        border-radius: 10px;
+      }
+
+      .actions a:hover {
+        background-color: #5a7c9e;
+      }
+
+      footer {
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 14px;
+        margin-top: auto;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          width: 90%;
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+        <div class="header-left">
+          <a href="{% url 'director_dashboard' %}" class="dashboard-btn">← Dashboard</a>
+        </div>
+        <div class="header-middle">
+          <p>Welcome, {{ director.admin_name }}</p>
+        </div>
+        <div class="header-right" style="display: flex; gap: 10px;">
+          <div><a href="{% url 'create_student_form' %}" class="nav-btn"> Create Student</a></div>
+          <div><a href="{% url 'director_logout' %}" class="logout-btn">Logout</a></div>
+        </div>
+      </header>
+
+    <div class="container">
+      <h2>Students</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Roll No</th>
+            <th>Mobile</th>
+            <th>Enrollment No</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if students %}
+            {% for student in students %}
+              <tr>
+                <td>
+                  {% if student.student_photo %}
+                    <img src="{{ student.student_photo.url }}" alt="Photo" class="student-photo" />
+                  {% else %}
+                    N/A
+                  {% endif %}
+                </td>
+                <td>{{ student.student_name }}</td>
+                <td>{{ student.student_roll }}</td>
+                <td>{{ student.student_phone }}</td>
+                <td>{{ student.student_enrollment_number }}</td>
+                <td>
+                  <a href="{% url 'goto_manage_student' student.id %}">Manage</a>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" style="text-align: center">No students found.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+      <div class="actions" style="margin-top: 5%; display: flex ; justify-content: space-between;">
+        <a href="{% url 'goto_student' %}" class="nav-btn">← Back</a>
+        <a href="{% url 'create_student_form' %}" class="nav-btn"> Create Student</a>
+      </div>
+
+      <div style="color:  red; margin-top: 2rem;">
+        {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+            <p class="{{ message.tags }}">{{ message }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <footer>
+      &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+    </footer>
+  </body>
+</html>

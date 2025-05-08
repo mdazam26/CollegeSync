@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Student</title>
+    <style>
+      :root {
+        --primary-color: #4caf50;
+        --secondary-color: #2c3e50;
+        --light-bg: #eef2f7;
+        --card-bg: #ffffff;
+        --danger-color: #e53935;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--light-bg);
+        color: #333;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .dashboard-btn {
+        background-color: #1a242f;
+        padding: 8px 15px;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: bold;
+        margin-right: 20px;
+        transition: background-color 0.3s ease;
+      }
+
+      .dashboard-btn:hover {
+        background-color: #111920;
+      }
+
+      .header-middle {
+        font-size: 20px;
+        flex: 1;
+        text-align: center;
+      }
+
+      .header-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      .logout-btn {
+        background-color: var(--danger-color);
+        padding: 8px 15px;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+      }
+
+      .logout-btn:hover {
+        background-color: #c62828;
+      }
+
+      .container {
+        flex: 1;
+        width: 95%;
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 30px;
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        color: var(--secondary-color);
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      label {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #444;
+        display: block;
+      }
+
+      .input-wrapper {
+        margin-bottom: 20px;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+      }
+
+      button {
+        width: 100%;
+        padding: 14px;
+        background-color: var(--primary-color);
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 10px;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .nav-links {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+
+      .nav-btn {
+        background-color: #2c3e50;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .nav-btn:hover {
+        background-color: #1a242f;
+      }
+
+      .messages p {
+        text-align: center;
+        color: red;
+        font-weight: bold;
+      }
+
+      footer {
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 14px;
+        margin-top: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-left">
+        <a href="{% url 'director_dashboard' %}" class="dashboard-btn">← Dashboard</a>
+      </div>
+      <div class="header-middle">
+        <p>Welcome, {{ director.admin_name }}</p>
+      </div>
+      <div class="header-right">
+        <a href="{% url 'director_logout' %}" class="logout-btn">Logout</a>
+      </div>
+    </header>
+
+    <div class="container">
+      <h1>Create New Student</h1>
+        <div>
+          <form action="{% url 'create_student' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+        
+            <div class="input-wrapper">
+              <label for="student_name">Full Name:</label>
+              <input type="text" name="student_name" id="student_name" required />
+            </div>
+        
+            <div class="input-wrapper">
+              <label for="student_photo">Photo:</label>
+              <input type="file" name="student_photo" id="student_photo" accept="image/*" />
+            </div>
+        
+            <div class="input-wrapper">
+              <label for="student_roll">Roll Number:</label>
+              <input type="text" name="student_roll" id="student_roll" />
+            </div>
+        
+            <div class="input-wrapper">
+              <label for="student_email">Email:</label>
+              <input type="email" name="student_email" id="student_email" />
+            </div>
+        
+            <div class="input-wrapper">
+              <label for="student_phone">Phone Number:</label>
+              <input type="text" name="student_phone" id="student_phone" />
+            </div>
+        
+            <div class="input-wrapper">
+              <label for="student_gender">Gender:</label>
+              <select name="student_gender" id="student_gender">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+        
+            <div class="input-wrapper">
+              <label for="student_dob">Date of Birth:</label>
+              <input type="date" name="student_dob" id="student_dob" defaultValue="2025-05-07"/>
+            </div>
+        
+            <div class="input-wrapper">
+              <label for="student_enrollment_number">Enrollment Number:</label>
+              <input type="text" name="student_enrollment_number" id="student_enrollment_number" required/>
+            </div>
+        
+            <div class="input-wrapper">
+              <label for="student_address">Address:</label>
+              <input type="text" name="student_address" id="student_address" />
+            </div>
+
+
+            <div class="input-wrapper">
+              <label for="student_batch">Batch:</label>
+              <select name="student_batch" id="student_batch" required>
+                <option value="">None</option>
+                {% for batch in batches %}
+                  <option value="{{ batch.id }}">{{ batch }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          
+            <div class="input-wrapper">
+              <label for="student_branch">Branch:</label>
+              <select name="student_branch" id="student_branch" required>
+                <option value="">None</option>
+                {% for branch in branches %}
+                  <option value="{{ branch.id }}">{{ branch }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <button type="submit">Create Student</button>
+          </form>
+    </div>
+    <div style="margin-top: 5%; display: flex ; justify-content: space-between;">
+      <a href="{% url 'goto_student' %}" class="nav-btn">← Back</a>
+      <a href="{% url 'view_student' %}" class="nav-btn">View Students</a>
+    </div>
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <p class="{{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <footer>
+      &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+    </footer>
+  </body>
+</html>

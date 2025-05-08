@@ -13,4 +13,23 @@ urlpatterns = [
     path('goto_manage_student/<int:student_id>/', views.goto_manage_student, name='goto_manage_student'),
     path('manage_student/<int:student_id>/', views.manage_student, name='manage_student'),
     path('delete_student/<int:student_id>/', views.delete_student, name='delete_student'),
+
+
+    path('existing_students/<int:classgroup_id>/', views.existing_students_form, name='existing_students_form'),
+    
+    path('add_existing_students<int:classgroup_id>/', views.add_existing_student, name='add_existing_students'),
+
+    path('classgroup_create_student_form/<int:classgroup_id>/', views.classgroup_create_student_form, name='classgroup_create_student_form'),
+
+    path('classgroup_create_student/<int:classgroup_id>/', views.classgroup_create_student, name='classgroup_create_student'),
+
+    path('classgroup_view_students/<int:classgroup_id>', views.classgroup_view_student, name='classgroup_view_student'),
+
+    path('goto_manage_classgroup_student/<int:studentclass_id>/', views.goto_manage_classgroup_student, name='goto_manage_classgroup_student'),
+
+    path('manage_classgroup_student/<int:studentclass_id>/update/', views.manage_classgroup_student, name='manage_classgroup_student'),
+
+    path('delete_classgroup_student/<int:studentclass_id>', views.delete_classgroup_student, name='delete_classgroup_student'),
+
+
 ]

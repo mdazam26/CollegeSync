@@ -163,7 +163,7 @@ def view_teacher(request):
         'teachers': normal_teachers,
     })
 
-    return HttpResponse("view teaher logic")
+  
     
 def goto_manage_teacher(request, teacher_id):
     director_id = request.session.get('director_id')
@@ -184,7 +184,7 @@ def goto_manage_teacher(request, teacher_id):
     branch = Branch.objects.filter(branch_hod=teacher).first()
     branch_name = branch.branch_name if branch else "Not Assigned"
 
-    return render(request, 'director/goto_manage_teacher.html', {
+    return render(request, 'student/goto_manage_teacher.html', {
         'teacher': teacher,
         'director': director,
         'branch_name': branch_name,

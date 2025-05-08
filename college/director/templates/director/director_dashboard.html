@@ -219,6 +219,16 @@
       </div>
      
     </div>
+
+  </div>
+  {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <p class="{{ message.tags }}">{{ message }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
   </div>
 
   <footer>
