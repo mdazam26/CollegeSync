@@ -1,12 +1,214 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Existing Student</h1>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assign Existing Student</title>
+    <style>
+      :root {
+        --primary: #007bff;
+        --primary-hover: #0056b3;
+        --danger: #dc3545;
+        --background: #f4f6f9;
+        --card-bg: #ffffff;
+        --text-color: #333;
+        --secondary: #2c3e50;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--background);
+        color: var(--text-color);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        background-color: var(--secondary);
+        color: white;
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logout-btn {
+        background-color: var(--danger);
+        padding: 8px 15px;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .container {
+        flex: 1;
+        width: 90%;
+        margin: 40px auto;
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+      }
+
+      .panel {
+        background-color: var(--card-bg);
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        flex: 1 1 300px;
+      }
+
+      h2 {
+        text-align: center;
+        color: var(--primary);
+        margin-bottom: 20px;
+      }
+
+      label {
+        font-weight: 600;
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 6px;
+      }
+
+      select,
+      input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+      }
+
+      button {
+        margin-top: 20px;
+        padding: 12px;
+        width: 100%;
+        background-color: var(--primary);
+        border: none;
+        border-radius: 6px;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: var(--primary-hover);
+      }
+
+      .messages {
+        background-color: #ffe6e6;
+        border-left: 5px solid var(--danger);
+        padding: 10px;
+        margin-bottom: 20px;
+        color: var(--danger);
+      }
+
+      ul {
+        list-style-type: none;
+        padding-left: 0;
+        margin-top: 10px;
+      }
+
+      li {
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      footer {
+        background-color: var(--secondary);
+        color: white;
+        text-align: center;
+        padding: 15px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <p>Welcome, {{ director.admin_name }}</p>
+      <p>Assign students to its class</p>
+      <div style="display: flex; gap: 5px;">
+        <a href="{% url 'goto_student' %}" class="logout-btn" style="background-color: white; color: black;">← Back</a>
+        <a href="{% url 'director_logout' %}"  class="logout-btn">Logout</a>
+      
+      </div>
+      
+    </header>
+
+    <div class="container">
+        <!-- LEFT PANEL: Assign Student -->
+        <div class="panel">
+          <h2>Assign Student</h2>
+      
+          {% if messages %}
+            <div class="messages">
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+      
+          <!-- Class Group Selector -->
+          <label for="classgroup-select">Select Class Group</label>
+          <select id="classgroup-select" name="classgroup_id" onchange="location='?classgroup_id=' + this.value;">
+            <option value="">-- Select Class Group --</option>
+            {% for group in classgroups %}
+              <option value="{{ group.id }}" {% if selected_classgroup and group.id == selected_classgroup.id %}selected{% endif %}>
+                {{ group.branch.branch_name }} - {{ group.batch.batch_name }}
+              </option>
+            {% endfor %}
+          </select>
+      
+          {% if selected_classgroup %}
+
+            <form method="post" action="{% url 'add_existing_student' selected_classgroup.id %}">
+              {% csrf_token %}
+              <label for="student_id">Select Unlinked Student</label>
+              <select name="student_id" required>
+                <option value="">-- Select Student --</option>
+                {% for student in unlinked_students %}
+                  <option value="{{ student.id }}">{{ student.student_name }} ({{ student.student_enrollment_number }})</option>
+                {% endfor %}
+              </select>
+      
+              <button type="submit">Assign</button>
+            </form>
+          {% endif %}
+        </div>
+      
+        <!-- RIGHT PANEL: View Linked Students -->
+        <div class="panel">
+          <h2>Linked Students</h2>
+      
+          {% if linked_students %}
+            <ul>
+              {% for link in linked_students %}
+                <li>{{ link.student.student_name }} ({{ link.student.student_enrollment_number }})</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>No students assigned to this class group.</p>
+          {% endif %}
+        </div>
+      </div>
+
+
+    <!-- Footer -->
+    <footer>
+      &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+    </footer>
+  </body>
 </html>

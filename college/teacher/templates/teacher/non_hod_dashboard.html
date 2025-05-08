@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Professor Dashboard | College Sync</title>
+  <style>
+    :root {
+      --primary-color: #43a047;
+      --secondary-color: #225524;
+      --light-bg: #f1f6fc;
+      --card-bg: #ffffff;
+      --danger-color: #d32f2f;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-bg);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .header-left h1 {
+      font-size: 24px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .welcome-text {
+      font-size: 14px;
+      line-height: 1.4;
+      text-align: right;
+    }
+
+    .logout-button {
+      background-color: var(--danger-color);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .logout-button:hover {
+      background-color: #b71c1c;
+    }
+
+    .container {
+      flex: 1;
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      max-height: 10rem;
+    }
+
+    .dashboard-card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+      padding: 30px 20px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--secondary-color);
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      color: var(--primary-color);
+    }
+
+    footer {
+      background-color: var(--secondary-color);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <h1>College Sync - Professor Dashboard</h1>
+    </div>
+    <div class="header-right">
+      <div class="welcome-text">
+        <strong>Welcome, {{ teacher.teacher_name }}</strong>
+      </div>
+      <a href="{% url 'professor_logout' %}" class="logout-button">Logout</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <a href="#" class="dashboard-card">📚 Take Class</a>
+  </div>
+
+  <footer>
+    &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+  </footer>
+
+</body>
+</html>

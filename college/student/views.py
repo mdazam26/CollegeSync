@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from super.models import College
 from director.models import ClassGroup, Batch, Branch
 from django.http import HttpResponse
-from django.urls import path, include
+from django.urls import path, include, reverse
 from tenants.models import TenantDomain
 from django.contrib import messages
-from .models import Student
+from .models import Student, StudentClass
 from datetime import datetime, date
 
 
@@ -252,11 +252,71 @@ def delete_student(request, student_id):
 
 
 # assign student
-def existing_students_form(request, classgroup_id):
-    return HttpResponse(f"Existing student selection form for ClassGroup ID: {classgroup_id}")
+def existing_students_form(request):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        messages.error(request, 'Session expired or director not logged in.')
+        return redirect('opem_director_login')
+
+    director = get_object_or_404(College, id=director_id)
+
+    # Get list of classgroups for dropdown
+    classgroups = ClassGroup.objects.all()
+
+    classgroup_id = request.GET.get('classgroup_id')
+    class_group = None
+    unlinked_students = []
+    linked_students = []
+
+    if classgroup_id:
+        class_group = get_object_or_404(ClassGroup, id=classgroup_id)
+        linked_student_ids = list(
+            StudentClass.objects.filter(class_group=class_group)
+            .values_list('student_id', flat=True).distinct()
+        )
+        print("Linked student IDs:", list(linked_student_ids))
+
+        unlinked_students = Student.objects.filter(
+            student_branch=class_group.branch,
+            student_batch=class_group.batch
+        ).exclude(id__in=linked_student_ids)
+
+        print("Unlinked students:", list(unlinked_students))
+
+        linked_students = StudentClass.objects.filter(class_group=class_group).select_related('student')
+
+    return render(request, 'student/existing_student_form.html', {
+        'director': director,
+        'classgroups': classgroups,
+        'selected_classgroup': class_group,
+        'unlinked_students': unlinked_students,
+        'linked_students': linked_students
+    })
+
 
 def add_existing_student(request, classgroup_id):
-    return HttpResponse(f"Process to add existing student to ClassGroup ID: {classgroup_id}")
+    if request.method == 'POST':
+        student_id = request.POST.get('student_id')
+        if not student_id:
+            messages.error(request, "No student selected.")
+            return redirect(f"{reverse('existing_students_form')}?classgroup_id={classgroup_id}")
+        
+        # Validate existence of student and class group
+        student = get_object_or_404(Student, id=student_id)
+        class_group = get_object_or_404(ClassGroup, id=classgroup_id)
+
+        # Create link only if it doesn't exist
+        student_class, created = StudentClass.objects.get_or_create(
+            student=student,
+            class_group=class_group
+        )
+
+        if created:
+            messages.success(request, f"Student '{student.student_name}' assigned to class group successfully.")
+        else:
+            messages.info(request, f"Student '{student.student_name}' is already assigned to this class group.")
+
+    return redirect(f"{reverse('existing_students_form')}?classgroup_id={classgroup_id}")
 
 def classgroup_create_student_form(request, classgroup_id):
     return HttpResponse(f"Form to create a new student for ClassGroup ID: {classgroup_id}")

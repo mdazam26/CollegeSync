@@ -58,9 +58,8 @@ def director_login(request):
             messages.error(request, "Invalid password")
             return render(request, 'director/login.html')
 
-
-
     return render(request, 'director/login.html')
+
 
 def director_dashboard(request):
     if 'director_id' not in request.session:

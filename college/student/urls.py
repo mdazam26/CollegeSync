@@ -15,9 +15,9 @@ urlpatterns = [
     path('delete_student/<int:student_id>/', views.delete_student, name='delete_student'),
 
 
-    path('existing_students/<int:classgroup_id>/', views.existing_students_form, name='existing_students_form'),
+    path('existing_students/', views.existing_students_form, name='existing_students_form'),
     
-    path('add_existing_students<int:classgroup_id>/', views.add_existing_student, name='add_existing_students'),
+    path('add_existing_student/<int:classgroup_id>/', views.add_existing_student, name='add_existing_student'),
 
     path('classgroup_create_student_form/<int:classgroup_id>/', views.classgroup_create_student_form, name='classgroup_create_student_form'),
 

@@ -132,10 +132,10 @@
         <img src="./dir.jpg" alt="Director Logo" width="100%" />
       </div>
 
-      <h1>Director Login</h1>
-      <p class="subtitle">Welcome to the Director's Portal</p>
+      <h1>Professor Login</h1>
+      <p class="subtitle">Welcome to the Professor Portal</p>
 
-      <form action="{% url 'director_login' %}" method="post">
+      <form action="{% url 'professor_login' %}" method="post">
         {% csrf_token %}
         <label for="username">Username</label>
         <input type="text" name="username" required />
@@ -155,7 +155,8 @@
         </ul>
         {% endif %}
       </div>
-      <a href="{% url 'professor_login_page' %}" class="toggle">Go to Professor login</a>
+      <a href="{% url 'open_director_login' %}" class="toggle">Go to Director login</a>
     </div>
+    
   </body>
 </html>

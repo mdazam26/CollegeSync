@@ -139,6 +139,10 @@
       padding: 15px;
       font-size: 14px;
     }
+    .expandable-card:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
 
     @media (max-width: 600px) {
       .header-right {
@@ -197,28 +201,28 @@
 
     <!-- 3. Semester Setup -->
     <div class="expandable-card" id="semesterGroup">
-      <div class="expandable-header" >
-        <a href="{% url 'goto_semester' %}" style="text-decoration: none; color: black;">📘 Semester Setup</a>
-      </div>    
+      <a href="{% url 'goto_semester' %}" style="text-decoration: none; color: inherit; display: block;">
+        <div class="expandable-header">📘 Semester Setup</div>
+      </a>
     </div>
+    
 
     <!-- 4. Student Management -->
     <div class="expandable-card" id="studentGroup">
-      <div class="expandable-header" >
-        <a href="{% url 'goto_student' %}" style="text-decoration: none; color: black;">👩‍🎓 Student Management</a>
-        
-      </div>
-    
+      <a href="{% url 'goto_student' %}" style="text-decoration: none; color: inherit; display: block;">
+        <div class="expandable-header">👩‍🎓 Student Management</div>
+      </a>
     </div>
+    
+
 
     <!-- 5. Schedule & Calendar -->
     <div class="expandable-card" id="scheduleGroup">
-      <div class="expandable-header" >
-        <a href="{% url 'goto_schedule' %}" style="text-decoration: none; color: black;">🗓️ Schedule & Calendar </a>
-        
-      </div>
-     
+      <a href="{% url 'goto_schedule' %}" style="text-decoration: none; color: inherit; display: block;">
+        <div class="expandable-header">🗓️ Schedule & Calendar</div>
+      </a>
     </div>
+    
 
   </div>
   {% if messages %}

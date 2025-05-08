@@ -8,6 +8,8 @@ urlpatterns = [
 
     path('open_director_login/', views.open_director_login, name='open_director_login'),
 
+    path('open_professor_login/', include('teacher.urls')),
+
 
     path('director_login/', views.director_login, name='director_login'),
 
