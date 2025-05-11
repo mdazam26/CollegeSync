@@ -105,7 +105,7 @@
       <h3>Welcome {{director.admin_name}}</h3>
     </div>
     <div style="display: flex; gap: .8rem;">
-      <a href="{% url 'director_dashboard' %}" class="logout-button">Back</a>
+      <a href="{% url 'director_dashboard' %}" class="logout-button">Dashboard</a>
       <a href="{% url 'director_logout' %}" class="logout-button">Logout</a>
       
     </div>
@@ -120,7 +120,7 @@
         <div class="card-title">Create Student</div>
       </a>
   
-      <a href="#" class="card">
+      <a href="{% url 'classgroup_create_student_form' %}" class="card">
         <div class="card-icon">🧾</div>
         <div class="card-title">Assign with Create</div>
       </a>
@@ -135,7 +135,7 @@
         <div class="card-title">Assign to Class</div>
       </a>
   
-      <a href="#" class="card">
+      <a href="{% url 'classgroup_view_student' %}" class="card">
         <div class="card-icon">📚</div>
         <div class="card-title">View Class Group</div>
       </a>

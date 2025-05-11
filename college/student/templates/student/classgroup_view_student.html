@@ -1,11 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ClassGroup View Students</title>
+  <style>
+    :root {
+      --primary: #007bff;
+      --danger: #dc3545;
+      --secondary: #2c3e50;
+      --bg: #f4f6f9;
+      --white: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--secondary);
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logout-btn {
+      background-color: var(--danger);
+      padding: 8px 16px;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+
+    .logout-btn:hover {
+      background-color: #b52b27;
+    }
+
+    .container {
+      flex: 1;
+      width: 90%;
+      max-width: 1100px;
+      margin: 30px auto;
+      background: var(--white);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* h1, h2 {
+      color: var(--secondary);
+      margin-bottom: 20px;
+    } */
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    select {
+      padding: 10px;
+      width: 100%;
+      max-width: 300px;
+      font-size: 16px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #e3f2fd;
+    }
+
+    img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .view-link {
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .view-link:hover {
+      text-decoration: underline;
+    }
+
+    .back-btn {
+      margin-top: 30px;
+      display: inline-block;
+      background-color: var(--secondary);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background-color: #1b3c58;
+    }
+
+    footer {
+      background-color: var(--secondary);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 14px;
+      margin-top: auto;
+    }
+  </style>
 </head>
 <body>
-    <h1>classgroup view student</h1>
+
+  <header>
+    <h1>Welcome, {{ director.admin_name }}</h1>
+    <a href="{% url 'director_logout' %}" class="logout-btn">Logout</a>
+  </header>
+
+  <div class="container">
+    <h2>ClassGroup - Student View</h2>
+
+    <form method="get">
+      <label for="classgroup">Select Class Group:</label>
+      <select name="classgroup_id" id="classgroup" onchange="this.form.submit()">
+        <option value="">-- Select Class Group --</option>
+        {% for group in classgroups %}
+          <option value="{{ group.id }}" {% if group.id|stringformat:"s" == selected_classgroup %}selected{% endif %}>
+            {{ group }}
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+
+    {% if students %}
+      <table>
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Roll No</th>
+            <th>Enrollment No</th>
+            <th>View</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in students %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>
+                {% if student.student_photo %}
+                  <img src="{{ student.student_photo.url }}" alt="Photo">
+                {% else %}
+                  No Photo
+                {% endif %}
+              </td>
+              <td>{{ student.student_name }}</td>
+              <td>{{ student.student_roll }}</td>
+              <td>{{ student.student_enrollment_number }}</td>
+              <td>
+                <a href="{% url 'view_classgroup_student' student.id %}" class="view-link">View</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% elif selected_classgroup %}
+      <p>No students found in this class group.</p>
+    {% endif %}
+
+    <a href="{% url 'goto_student' %}" class="back-btn">← Back to Student Panel</a>
+  </div>
+
+  <footer>
+    &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+  </footer>
+
 </body>
 </html>

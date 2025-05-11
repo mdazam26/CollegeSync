@@ -1,11 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create and View Students</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      padding: 40px;
+    }
+
+    .panel {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      flex: 1 1 500px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #007bff;
+      text-align: center;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .messages {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #ffe6e6;
+      border-left: 5px solid #dc3545;
+      color: #dc3545;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 10px;
+    }
+
+    li {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .back-btn {
+      background-color: white;
+      color: black;
+      border: 1px solid black;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-right: 10px;
+    }
+  </style>
 </head>
 <body>
-    <h1>create student group</h1>
+
+  <header class="header">
+    <p>Create New Student & View Linked Students</p>
+    <div>
+      <a class="back-btn" href="{% url 'goto_student' %}">← Back</a>
+      <a class="back-btn" href="{% url 'director_logout' %}">Logout</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- LEFT PANEL: Create Student -->
+    <div class="panel">
+      <h2>Create Student</h2>
+
+      <form method="post" action="{% url 'classgroup_create_student' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label for="classgroup_id">Class Group</label>
+        <select name="classgroup_id" id="classgroup_id" onchange="location='?classgroup_id=' + this.value;" required>
+          <option value="">-- Select --</option>
+          {% for cg in classgroups %}
+            <option value="{{ cg.id }}" {% if selected_classgroup and cg.id == selected_classgroup.id %}selected{% endif %}>{{ cg }}</option>
+          {% endfor %}
+        </select>
+
+        <label>Student Name</label>
+        <input type="text" name="student_name" required>
+
+        <label>Enrollment Number</label>
+        <input type="text" name="student_enrollment_number" required>
+
+        <label>Roll Number</label>
+        <input type="text" name="student_roll">
+
+        <label>Email</label>
+        <input type="email" name="student_email">
+
+        <label>Phone</label>
+        <input type="text" name="student_phone">
+
+        <label>Gender</label>
+        <select name="student_gender">
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <label>Date of Birth</label>
+        <input type="date" name="student_dob">
+
+        <label>Address</label>
+        <textarea name="student_address"></textarea>
+
+        <label>Photo</label>
+        <input type="file" name="student_photo">
+
+        <button type="submit">Create Student</button>
+
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <p class="{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </form>
+    </div>
+
+    <!-- RIGHT PANEL: Linked Students -->
+    <div class="panel">
+      <h2>Linked Students</h2>
+
+      {% if linked_students %}
+        <ul>
+          {% for link in linked_students %}
+            <li>{{ link.student.student_name }} ({{ link.student.student_enrollment_number }})</li>
+          {% endfor %}
+        </ul>
+      {% elif selected_classgroup %}
+        <p>No students linked with this class group.</p>
+      {% else %}
+        <p>Select a class group to see students.</p>
+      {% endif %}
+    </div>
+  </div>
+
 </body>
 </html>

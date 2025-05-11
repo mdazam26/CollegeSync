@@ -1,90 +1,208 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Welcome to CollegeSync</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f9f9f9;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 900px;
-            margin: 50px auto;
-            background: #fff;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1, h2 {
-            text-align: center;
-            color: #2c3e50;
-        }
-        p {
-            font-size: 16px;
-            line-height: 1.6;
-            color: #34495e;
-        }
-        .cta {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
-        }
-        .cta a {
-            background-color: #3498db;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-        .cta a:hover {
-            background-color: #2980b9;
-        }
-        .guide {
-            margin-top: 40px;
-            padding: 20px;
-            background: #ecf0f1;
-            border-left: 5px solid #3498db;
-        }
-        .guide h3 {
-            margin-top: 0;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CollegeSync</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+
+    header {
+      background-color: #1e3a8a;
+      padding: 15px 20px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .hamburger div {
+      width: 25px;
+      height: 3px;
+      background: white;
+      margin: 4px 0;
+    }
+
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background-color: #1e3a8a;
+    }
+
+    .mobile-menu a {
+      color: white;
+      padding: 10px;
+      text-decoration: none;
+      border-top: 1px solid #3b4b99;
+    }
+
+    section {
+      padding: 60px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      color: #1e3a8a;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 20px;
+    }
+
+    .features {
+      background-color: #e0ebf5;
+      padding: 40px;
+      border-radius: 8px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #2563eb;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+
+    footer {
+      background-color: #1e3a8a;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+    }
+
+    @media (max-width: 768px) {
+      nav ul {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .mobile-menu {
+        display: flex;
+      }
+    }
+  </style>
 </head>
 <body>
-
-    <div class="container">
-        <h1>Welcome to CollegeSync</h1>
-        <p>
-            CollegeSync is a modern, multi-tenant college management system that streamlines academic and administrative tasks. 
-            Whether you're an institution administrator, head of department, or faculty member, CollegeSync helps you efficiently manage:
-        </p>
-        <ul>
-            <li>Student records and attendance</li>
-            <li>Branch and semester configurations</li>
-            <li>Class scheduling</li>
-            <li>Subject management</li>
-            <li>PDF generation for results and reports</li>
-        </ul>
-
-        <div class="guide">
-            <h3>How to Get Started</h3>
-            <ol>
-                <li>Click on the <strong>"Start CollegeSync"</strong> button below.</li>
-                <li>Enter your desired subdomain (e.g., <code>macet</code>, <code>test1</code>).</li>
-                <li>You will be redirected to your college's dashboard based on the subdomain.</li>
-                <li>If you're a new user, use the form to create a tenant domain first via localhost.</li>
-            </ol>
-            <p><strong>Note:</strong> This system supports subdomain-based routing. You must use URLs like <code>test1.localhost:8000</code> after setup.</p>
-        </div>
-
-        <div class="cta">
-            <a href="{% url 'tenant_form' %}" target="_blank">Start CollegeSync</a>
-        </div>
+  <header>
+    <div class="logo">CollegeSync</div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
     </div>
+    <nav>
+      <ul id="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="{% url 'tenant_form' %}" target="_blank">Start CollegeSync</a></li>
+      </ul>
+    </nav>
+  </header>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#features">Features</a>
+    <a href="#contact">Contact</a>
+    <a href="{% url 'tenant_form' %}" target="_blank">Start CollegeSync</a>
+  </div>
 
+  <section id="home">
+    <h2>Welcome to CollegeSync</h2>
+    <p>CollegeSync is your all-in-one academic administration tool built for modern institutions. Whether you manage a single college or a multi-campus university, our platform empowers you to control everything from one place.</p>
+    <a href="{% url 'tenant_form' %}" class="cta-button">Launch Your Campus</a>
+  </section>
+
+  <section id="about">
+    <h2>About</h2>
+    <p>CollegeSync is a multi-tenant academic management platform that helps streamline education operations from the ground up. Built for scalability, our platform is designed to support subdomain-based tenant routing, ensuring each institution gets a personalized experience.</p>
+    <p>Whether you're a Superadmin managing multiple institutions or a Director handling one, CollegeSync is tailored to your role.</p>
+  </section>
+
+  <section id="features" class="features">
+    <h2>Features</h2>
+    <ul>
+      <li>Multi-tenant support with subdomain-based routing</li>
+      <li>Dynamic class, batch, and branch management</li>
+      <li>Custom semester and subject configuration per branch</li>
+      <li>PDF generation for results and academic reports</li>
+      <li>Attendance tracking and report generation</li>
+      <li>Role-based dashboards for Director, HODs, and Professors</li>
+      <li>Mobile-responsive interface for access on the go</li>
+    </ul>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <p>Have questions or want to learn more?</p>
+    <p>Email us at <a href="mailto:support@collegesync.in">support@collegesync.in</a></p>
+  </section>
+
+  <footer>
+    &copy; 2025 CollegeSync. All rights reserved.
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      const mobileMenu = document.getElementById('mobileMenu');
+      mobileMenu.style.display = mobileMenu.style.display === 'flex' ? 'none' : 'flex';
+    }
+  </script>
 </body>
 </html>

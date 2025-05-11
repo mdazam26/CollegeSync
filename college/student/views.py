@@ -318,20 +318,153 @@ def add_existing_student(request, classgroup_id):
 
     return redirect(f"{reverse('existing_students_form')}?classgroup_id={classgroup_id}")
 
-def classgroup_create_student_form(request, classgroup_id):
-    return HttpResponse(f"Form to create a new student for ClassGroup ID: {classgroup_id}")
+def classgroup_create_student_form(request):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        messages.error(request, 'Session expired or director not logged in.')
+        return redirect('opem_director_login')
 
-def classgroup_create_student(request, classgroup_id):
-    return HttpResponse(f"Create and link new student to ClassGroup ID: {classgroup_id}")
+    director = get_object_or_404(College, id=director_id)
 
-def classgroup_view_student(request, classgroup_id):
-    return HttpResponse(f"View all students linked to ClassGroup ID: {classgroup_id}")
+    classgroups = ClassGroup.objects.all()
+    classgroup_id = request.GET.get("classgroup_id")
+    selected_classgroup = None
+    linked_students = []
 
-def goto_manage_classgroup_student(request, studentclass_id):
-    return HttpResponse(f"Open edit form for StudentClass ID: {studentclass_id}")
+    if classgroup_id:
+        selected_classgroup = get_object_or_404(ClassGroup, id=classgroup_id)
+        linked_students = StudentClass.objects.filter(class_group=selected_classgroup).select_related('student')
 
-def manage_classgroup_student(request, studentclass_id):
-    return HttpResponse(f"Update StudentClass entry with ID: {studentclass_id}")
+    return render(request, 'student/classgroup_create_student_form.html', {
+        'classgroups': classgroups,
+        'selected_classgroup': selected_classgroup,
+        'linked_students': linked_students,
+        'director': director
+    })
 
-def delete_classgroup_student(request, studentclass_id):
-    return HttpResponse(f"Delete StudentClass entry with ID: {studentclass_id}")
+def classgroup_create_student(request):
+    if request.method == 'POST':
+        classgroup_id = request.POST.get('classgroup_id')
+        student_name = request.POST.get('student_name', '').strip()
+        student_enrollment = request.POST.get('student_enrollment_number', '').strip()
+        student_email = request.POST.get('student_email', '').strip()
+        student_phone = request.POST.get('student_phone', '').strip()
+        student_gender = request.POST.get('student_gender', '')
+        student_dob_input = request.POST.get('student_dob')
+        student_address = request.POST.get('student_address', '').strip()
+        student_roll = request.POST.get('student_roll', '').strip()
+        student_photo = request.FILES.get('student_photo')
+
+        if not classgroup_id:
+            messages.error(request, "Please select a class group.")
+            return redirect('classgroup_create_student_form')
+
+        classgroup = get_object_or_404(ClassGroup, id=classgroup_id)
+
+        # Required field checks
+        if not student_name or not student_enrollment:
+            messages.error(request, "Student name and enrollment number are required.")
+            return redirect('classgroup_create_student_form')
+
+        # Parse DOB
+        if student_dob_input:
+            try:
+                student_dob = datetime.strptime(student_dob_input, '%Y-%m-%d').date()
+            except ValueError:
+                messages.error(request, "Invalid date format. Use YYYY-MM-DD.")
+                return redirect('classgroup_create_student_form')
+        else:
+            student_dob = date.today()
+
+        # Create student instance
+        student = Student(
+            student_name=student_name,
+            student_photo=student_photo,
+            student_roll=student_roll,
+            student_email=student_email,
+            student_phone=student_phone,
+            student_gender=student_gender,
+            student_dob=student_dob,
+            student_enrollment_number=student_enrollment,
+            student_address=student_address,
+            student_batch=classgroup.batch,
+            student_branch=classgroup.branch
+        )
+
+        try:
+            student.save()
+            StudentClass.objects.create(student=student, class_group=classgroup)
+        except Exception as e:
+            messages.error(request, f"Error while saving student or linking to class: {e}")
+            return redirect('classgroup_create_student_form')
+
+        messages.success(request, "Student created and assigned to class group successfully.")
+        return redirect('classgroup_create_student_form')
+
+    return redirect('classgroup_create_student_form')
+
+def classgroup_view_student(request):
+    director_id = request.session.get('director_id')
+    try:
+        director = College.objects.get(id=director_id)
+    except College.DoesNotExist:
+        messages.error(request, "Director not found")
+        return redirect('open_director_login')
+
+    classgroups = ClassGroup.objects.all()
+    selected_classgroup_id = request.GET.get('classgroup_id')
+    students_in_class = []
+
+    if selected_classgroup_id:
+        try:
+            selected_classgroup = ClassGroup.objects.get(id=selected_classgroup_id)
+            student_classes = StudentClass.objects.filter(
+                class_group=selected_classgroup
+            ).select_related('student')
+
+            students_in_class = sorted(
+                [sc.student for sc in student_classes],
+                key=lambda s: s.student_enrollment_number or ''
+            )
+        except ClassGroup.DoesNotExist:
+            messages.error(request, "Selected class group not found")
+            selected_classgroup = None
+    else:
+        selected_classgroup = None
+
+    return render(request, 'student/classgroup_view_student.html', {
+        'director': director,
+        'classgroups': classgroups,
+        'students': students_in_class,
+        'selected_classgroup': selected_classgroup_id
+    })
+
+def view_classgroup_student(request, student_id):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        return redirect('opem_director_login')  # Or your director login URL name
+
+    director = get_object_or_404(College, id=director_id)
+    student = get_object_or_404(Student, id=student_id)
+    classgroups = StudentClass.objects.filter(student=student).select_related('class_group')
+
+    return render(request, 'student/view_classgroup_student.html', {
+        'director': director,
+        'student': student,
+        'classgroups': classgroups
+    })
+
+def classgroup_students_view(request, classgroup_id):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        return redirect('opem_director_login')  # Or your director login URL name
+    director = get_object_or_404(College, id=director_id)
+    classgroup = get_object_or_404(ClassGroup, id=classgroup_id)
+    student_links = StudentClass.objects.filter(class_group=classgroup).select_related('student')
+    students = [sc.student for sc in student_links]
+
+    return render(request, 'student/classgroup_students.html', {
+        'classgroup': classgroup,
+        'students': students,
+        'director': director,
+    })

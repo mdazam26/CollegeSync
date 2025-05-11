@@ -19,17 +19,15 @@ urlpatterns = [
     
     path('add_existing_student/<int:classgroup_id>/', views.add_existing_student, name='add_existing_student'),
 
-    path('classgroup_create_student_form/<int:classgroup_id>/', views.classgroup_create_student_form, name='classgroup_create_student_form'),
+    path('classgroup_create_student_form/', views.classgroup_create_student_form, name='classgroup_create_student_form'),
 
-    path('classgroup_create_student/<int:classgroup_id>/', views.classgroup_create_student, name='classgroup_create_student'),
+    path('classgroup_create_student/', views.classgroup_create_student, name='classgroup_create_student'),
 
-    path('classgroup_view_students/<int:classgroup_id>', views.classgroup_view_student, name='classgroup_view_student'),
+    path('classgroup_view_student/', views.classgroup_view_student, name='classgroup_view_student'),
 
-    path('goto_manage_classgroup_student/<int:studentclass_id>/', views.goto_manage_classgroup_student, name='goto_manage_classgroup_student'),
+    path('view_classgroup_student/<int:student_id>/', views.view_classgroup_student, name='view_classgroup_student'),
 
-    path('manage_classgroup_student/<int:studentclass_id>/update/', views.manage_classgroup_student, name='manage_classgroup_student'),
-
-    path('delete_classgroup_student/<int:studentclass_id>', views.delete_classgroup_student, name='delete_classgroup_student'),
-
+   # student/urls.py
+    path('classgroup_students/<int:classgroup_id>/', views.classgroup_students_view, name='classgroup_students_view')
 
 ]

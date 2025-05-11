@@ -223,7 +223,7 @@
               Assigned {% endif %}
             </td>
             <td>
-              <a href="#" class="view-button">View Students</a>
+              <a href="{% url 'classgroup_students_view' class.id %}" class="view-button">View Students</a>
               <a
                 href="{% url 'delete_class' class.id %}"
                 class="delete-button"

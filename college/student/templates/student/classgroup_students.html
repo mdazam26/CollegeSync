@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class Group Students | College Sync</title>
+  <style>
+    :root {
+      --primary-color: #007bff;
+      --danger-color: #dc3545;
+      --secondary-color: #2c3e50;
+      --light-bg: #f4f6f9;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-bg);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .header {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .dashboard-btn {
+      background-color: #1a242f;
+      padding: 8px 15px;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .dashboard-btn:hover {
+      background-color: #111920;
+    }
+
+    .logout-btn {
+      background-color: var(--danger-color);
+      padding: 8px 15px;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .logout-btn:hover {
+      background-color: #c62828;
+    }
+
+    .container {
+      width: 80%;
+      margin: 30px auto;
+      background-color: var(--white);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: var(--secondary-color);
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .student-photo {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: var(--secondary-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+
+    .back-btn:hover {
+      background-color: #1b3d5d;
+    }
+
+    footer {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 14px;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="{% url 'director_dashboard' %}" class="dashboard-btn">Dashboard</a>
+    <p>Welcome, {{ director.admin_name }} | {{ director.institute_name }}</p>
+    <a href="{% url 'director_logout' %}" class="logout-btn">Logout</a>
+  </header>
+
+  <div class="container">
+    <h2>Students in {{ classgroup }}</h2>
+
+    {% if students %}
+      <table>
+        <thead>
+          <tr>
+            <th>S. No</th>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Enrollment No</th>
+            <th>Roll No</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in students %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>
+                {% if student.student_photo %}
+                  <img src="{{ student.student_photo.url }}" alt="Student Photo" class="student-photo">
+                {% else %}
+                  No Photo
+                {% endif %}
+              </td>
+              <td>{{ student.student_name }}</td>
+              <td>{{ student.student_enrollment_number }}</td>
+              <td>{{ student.student_roll }}</td>
+              <td>{{ student.student_email }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No students linked to this class group.</p>
+    {% endif %}
+
+    <a href="{% url 'view_class' %}" class="back-btn"> Back to Class List</a>
+  </div>
+
+  <footer>
+    &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+  </footer>
+</body>
+</html>

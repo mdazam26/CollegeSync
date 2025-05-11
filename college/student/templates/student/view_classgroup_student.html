@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Details | College Sync</title>
+  <style>
+    :root {
+      --primary-color: #007bff;
+      --danger-color: #dc3545;
+      --secondary-color: #2c3e50;
+      --light-bg: #f4f6f9;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-bg);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .header {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .dashboard-btn {
+      background-color: #1a242f;
+      padding: 8px 15px;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      margin-right: 20px;
+    }
+
+    .dashboard-btn:hover {
+      background-color: #111920;
+    }
+
+    .logout-btn {
+      background-color: var(--danger-color);
+      padding: 8px 15px;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .logout-btn:hover {
+      background-color: #c62828;
+    }
+
+    .container {
+      width: 80%;
+      margin: 30px auto;
+      background: var(--white);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .student-photo {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    h2, h3 {
+      color: var(--secondary-color);
+      margin-bottom: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    footer {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 14px;
+      margin-top: auto;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: var(--secondary-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+
+    .back-btn:hover {
+      background-color: #1b3d5d;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="{% url 'director_dashboard' %}" class="dashboard-btn">Dashboard</a>
+    <p>Welcome, {{ director.admin_name }} | {{ director.institute_name }}</p>
+    <a href="{% url 'director_logout' %}" class="logout-btn">Logout</a>
+  </header>
+
+  <div class="container">
+    <h2>Student Details</h2>
+
+    <div style="display: flex; gap: 40px; align-items: center;">
+      {% if student.student_photo %}
+        <img src="{{ student.student_photo.url }}" alt="Student Photo" class="student-photo" />
+      {% else %}
+        <p>No Photo Available</p>
+      {% endif %}
+
+      <div>
+        <p><strong>Name:</strong> {{ student.student_name }}</p>
+        <p><strong>Enrollment No:</strong> {{ student.student_enrollment_number }}</p>
+        <p><strong>Roll No:</strong> {{ student.student_roll }}</p>
+        <p><strong>Email:</strong> {{ student.student_email }}</p>
+        <p><strong>Phone:</strong> {{ student.student_phone }}</p>
+        <p><strong>Gender:</strong> {{ student.student_gender }}</p>
+        <p><strong>Date of Birth:</strong> {{ student.student_dob }}</p>
+        <p><strong>Address:</strong> {{ student.student_address }}</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 30px;">Linked Class Groups</h3>
+    {% if classgroups %}
+      <table>
+        <thead>
+          <tr>
+            <th>S. No</th>
+            <th>Class Group</th>
+            <th>Batch</th>
+            <th>Branch</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for group in classgroups %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ group.class_group }}</td>
+              <td>{{ group.class_group.batch.batch_name }}</td>
+              <td>{{ group.class_group.branch.branch_name }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No class group linked to this student.</p>
+    {% endif %}
+
+    <a href="{% url 'classgroup_view_student' %}" class="back-btn">← Back to ClassGroup View</a>
+  </div>
+
+  <footer>
+    &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+  </footer>
+</body>
+</html>
