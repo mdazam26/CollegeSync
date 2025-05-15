@@ -47,22 +47,27 @@ class SemesterSubject(models.Model):
         return f"{self.branch_semester} → {self.subject.name}"
 
 class ActiveClassSemester(models.Model):
-    student_class = models.ForeignKey(
-        StudentClass,
+
+    class_group = models.ForeignKey(
+        ClassGroup,
         on_delete=models.CASCADE,
-        related_name='active_semesters'
+        related_name='active_semesters',
+        null=True,
+        blank=True
     )
     branch_semester = models.ForeignKey(
         BranchSemester,
         on_delete=models.CASCADE,
-        related_name='active_class_semesters'
+        related_name='active_class_semesters',
+        null=True,
+        blank=True
     )
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
-
+    
     class Meta:
-        unique_together = ('student_class', 'branch_semester')
+        unique_together = ('class_group', 'branch_semester')
 
     def __str__(self):
-        return f"{self.student_class} → {self.branch_semester.semester_template.semester_name}"
+        return f"{self.class_group} → {self.branch_semester.semester_template.semester_name}"

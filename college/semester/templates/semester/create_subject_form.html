@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Subject | College Sync</title>
+  <style>
+    :root {
+      --primary: #007bff;
+      --secondary: #2c3e50;
+      --danger: #dc3545;
+      --bg: #f4f6f9;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--secondary);
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .header-left a,
+    .header-right a {
+      background-color: var(--primary);
+      color: white;
+      padding: 8px 14px;
+      text-decoration: none;
+      border-radius: 6px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+
+    .header-right a.logout {
+      background-color: var(--danger);
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      padding: 30px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .panel {
+      flex: 1 1 450px;
+      background-color: var(--white);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: var(--secondary);
+      font-size: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background-color: var(--primary);
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #e0e0e0;
+    }
+
+    .messages {
+      margin: 20px auto;
+      padding: 15px;
+      background: #ffe6e6;
+      border-left: 5px solid var(--danger);
+      color: var(--danger);
+      width: 80%;
+      border-radius: 6px;
+    }
+
+    footer {
+      background-color: var(--secondary);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      margin-top: auto;
+    }
+
+    .manage-link {
+      background-color: var(--secondary);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+
+    .manage-link:hover {
+      background-color: #1c2e3f;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <a href="{% url 'director_dashboard' %}">Dashboard</a>
+    </div>
+    <div><strong>Welcome, {{ director.admin_name }}</strong></div>
+    <div class="header-right">
+      <a href="{% url 'goto_semester' %}">Back</a>
+      <a href="{% url 'director_logout' %}" class="logout">Logout</a>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="container">
+    <!-- Left Panel: Create Subject -->
+    <div class="panel">
+      <h2>Create Subject</h2>
+      <form method="POST" action="{% url 'create_subject' %}">
+        {% csrf_token %}
+        <label for="name">Subject Name:</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="code">Subject Code:</label>
+        <input type="text" name="code" id="code" required>
+
+        <label for="credit">Credits:</label>
+        <input type="number" name="credit" id="credit" min="0" required>
+
+        <label for="modules">Modules:</label>
+        <input type="number" name="modules" id="modules" min="1" required>
+
+        <button type="submit">Add Subject</button>
+      </form>
+    </div>
+
+    <!-- Right Panel: View Subjects -->
+    <div class="panel">
+      <h2>All Subjects</h2>
+      {% if subjects %}
+        <table>
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Name</th>
+              <th>Code</th>
+              <th>Credits</th>
+              <th>Modules</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for subject in subjects %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ subject.name }}</td>
+                <td>{{ subject.code }}</td>
+                <td>{{ subject.credit }}</td>
+                <td>{{ subject.modules }}</td>
+                <td>
+                  <a href="{% url 'goto_manage_subject' subject.id %}" class="manage-link">Manage</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No subjects found.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <footer>
+    &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+  </footer>
+
+</body>
+</html>

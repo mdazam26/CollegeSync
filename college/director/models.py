@@ -13,7 +13,7 @@ class Teacher(models.Model):
 
 
 class Branch(models.Model):
-    branch_name = models.CharField(max_length=100, unique=True, null=True, blank= True)
+    branch_name = models.CharField(max_length=100, null=True, blank= True)
     branch_hod = models.OneToOneField(
         Teacher,
         on_delete=models.SET_NULL,

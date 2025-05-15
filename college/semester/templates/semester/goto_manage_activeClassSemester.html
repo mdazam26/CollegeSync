@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Active Class Semester</title>
+  <style>
+    :root {
+      --primary-color: #007bff;
+      --danger-color: #dc3545;
+      --secondary-color: #2c3e50;
+      --light-bg: #f4f6f9;
+      --white: #ffffff;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-bg);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .logout-btn {
+      background-color: var(--danger-color);
+      padding: 8px 15px;
+      border-radius: 6px;
+      color: white;
+      text-decoration: none;
+    }
+
+    .container {
+      display: flex;
+      gap: 30px;
+      padding: 30px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .panel {
+      flex: 1;
+      background-color: var(--white);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    h1, h2 {
+      margin-bottom: 20px;
+      color: var(--secondary-color);
+      font-size: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .save { background-color: var(--primary-color); }
+    .save:hover { background-color: #0056b3; }
+
+    .delete { background-color: var(--danger-color); }
+    .delete:hover { background-color: #c82333; }
+
+    .back { background-color: #6c757d; text-decoration: none; text-align: center; }
+    .back:hover { background-color: #5a6268; }
+
+    .messages { margin-top: 20px; text-align: center; color: red; font-weight: bold; }
+
+    footer {
+      background-color: var(--secondary-color);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      margin-top: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div><strong>Welcome, {{ director.admin_name }}</strong></div>
+  <div>
+    <a href="{% url 'director_dashboard' %}" style="background-color: rgb(97, 129, 216); color: white; padding: 6px 15px; border-radius: 5px;">Dashboard</a>
+    <a href="{% url 'director_logout' %}" class="logout-btn">Logout</a>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Left Panel: Manage Form -->
+  <div class="panel">
+    <h2>Manage Active Class Semester</h2>
+    <form method="POST" action="{% url 'manage_activeClassSemester' acs.id %}">
+      {% csrf_token %}
+
+      <label>Class Group:</label>
+      <input type="text" value="{{ acs.class_group.batch.batch_name }} - {{ acs.class_group.branch.branch_name }}" readonly>
+
+      <label>Branch - Semester:</label>
+      <input type="text" value="{{ acs.branch_semester.branch.branch_name }} - {{ acs.branch_semester.semester_template.semester_name }}" readonly>
+
+      <label for="start_date">Start Date:</label>
+      <input type="date" name="start_date" value="{{ acs.start_date|date:'Y-m-d' }}" required>
+
+      <label for="end_date">End Date:</label>
+      <input type="date" name="end_date" value="{{ acs.end_date|date:'Y-m-d' }}" required>
+
+      <label for="is_active">Status:</label>
+      <select name="is_active" id="is_active">
+        <option value="True" {% if acs.is_active %}selected{% endif %}>Active</option>
+        <option value="False" {% if not acs.is_active %}selected{% endif %}>Inactive</option>
+      </select>
+
+      <button type="submit" class="button save">Save Changes</button>
+    </form>
+
+    <div style="margin-top: 20px; display: flex; gap: 10px;">
+      <a href="{% url 'delete_activeClassSemester' acs.id %}"
+         class="button delete"
+         onclick="return confirm('Are you sure you want to delete this record?');">
+         Delete Record
+      </a>
+      <a href="{% url 'create_activeClassSemester_form' %}" class="button back">← Back</a>
+    </div>
+
+    <div class="messages">
+      {% if messages %}
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Right Panel: Student List -->
+  <div class="panel">
+    <h2>Students in This Class Group</h2>
+    {% with acs.class_group.students.all as student_classes %}
+      {% if student_classes %}
+        <table>
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Student Name</th>
+              <th>Roll No.</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sc in student_classes %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ sc.student.student_name }}</td>
+                <td>{{ sc.student.student_roll }}</td>
+                <td>{{ sc.student.student_email }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No students found in this class group.</p>
+      {% endif %}
+    {% endwith %}
+  </div>
+</div>
+
+<footer>
+  &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+</footer>
+
+</body>
+</html>
