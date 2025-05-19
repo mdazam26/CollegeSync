@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin | Schedule & Calendar</title>
+  <title>Admin | Days List</title>
   <style>
     :root {
       --primary: #10ac84;
@@ -48,54 +48,57 @@
     }
 
     .container {
-      max-width: 1100px;
+      max-width: 800px;
       margin: 40px auto;
       padding: 0 20px;
     }
 
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: 10px;
-      padding: 30px 20px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    h2 {
       text-align: center;
-      transition: background 0.3s, transform 0.2s;
-      text-decoration: none;
-      color: #333;
+      margin-bottom: 20px;
     }
 
-    .card:hover {
-      background: var(--hover);
-      transform: translateY(-5px);
+    ul {
+      list-style: none;
+      padding: 0;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
     }
 
-    .card-icon {
-      font-size: 36px;
-      margin-bottom: 10px;
-    }
-
-    .card-title {
+    li {
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
       font-size: 18px;
+    }
+
+    li:last-child {
+      border-bottom: none;
+    }
+
+    .back-button {
+      display: inline-block;
+      margin-top: 20px;
+      background: var(--primary);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 6px;
+      text-decoration: none;
       font-weight: 600;
     }
 
-   
+    .back-button:hover {
+      background-color: #0e9e76;
+    }
+
     footer {
-        background: var(--dark);
-        color: white;
-        text-align: center;
-        padding: 15px;
-        margin-top: 40px;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        position: fixed;
+      background: var(--dark);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      margin-top: 40px;
+      bottom: 0;
+     
     }
   </style>
 </head>
@@ -103,39 +106,24 @@
 
   <header>
     <div>
-      <h3>Welcome {{director.admin_name}}</h3>
+      <h3>Welcome {{ director.admin_name }}</h3>
     </div>
     <div style="display: flex; gap: .8rem;">
       <a href="{% url 'director_dashboard' %}" class="logout-button">Dashboard</a>
       <a href="{% url 'director_logout' %}" class="logout-button">Logout</a>
-      
     </div>
   </header>
 
-<div class="container">
-  <div class="card-grid">
+  <div class="container">
+    <h2>College days</h2>
+    <ul>
+      {% for day in days %}
+        <li>{{ day.name }}</li>
+      {% endfor %}
+    </ul>
 
-    <!-- Period Slot Management -->
-    <a href="{% url 'create_periodSlots_form' %}" class="card">
-      <div class="card-icon">🕒</div> <!-- Clock face -->
-      <div class="card-title">Period Slots</div>
-    </a>
-
-    <!-- Day Management -->
-    <a href="{% url 'days' %}" class="card">
-      <div class="card-icon">📖</div> <!-- Calendar/book-like -->
-      <div class="card-title">Days</div>
-    </a>
-
-    <!-- Class Schedule Management -->
-    <a href="{% url 'create_classSchedule_form' %}" class="card">
-      <div class="card-icon">🗓️</div> <!-- Spiral calendar -->
-      <div class="card-title">Class Schedule</div>
-    </a>
-
+    <a href="{% url 'goto_schedule' %}" class="back-button">← Back to Schedule</a>
   </div>
-</div>
-
 
   <footer>
     &copy; 2025 College Sync. All rights reserved.

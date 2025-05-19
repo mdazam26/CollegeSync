@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Period Slot: {{ period_slot.name }}</title>
+  <style>
+    :root {
+      --primary-color: #007bff;
+      --danger-color: #dc3545;
+      --secondary-color: #2c3e50;
+      --light-bg: #f4f6f9;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-bg);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logout-btn {
+      background-color: var(--danger-color);
+      padding: 8px 15px;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .logout-btn:hover {
+      background-color: #c62828;
+    }
+
+    .container {
+      width: 60%;
+      margin: 30px auto;
+      background: var(--white);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: var(--secondary-color);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="time"] {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+    }
+
+    .save {
+      background-color: var(--primary-color);
+    }
+
+    .save:hover {
+      background-color: #0056b3;
+    }
+
+    .back {
+      background-color: #6c757d;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .back:hover {
+      background-color: #5a6268;
+    }
+
+    .messages {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .messages p {
+      color: red;
+      font-weight: bold;
+    }
+
+    footer {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 14px;
+      margin-top: auto;
+    }
+
+    .button.delete {
+      background-color: var(--danger-color);
+    }
+
+    .button.delete:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div><p><strong>Welcome, {{ director.admin_name }}</strong></p></div>
+    <div>
+      <a href="{% url 'director_dashboard' %}" style="background-color: rgb(97, 129, 216); color: white; padding: 6px 15px; border-radius: 5px;">Dashboard</a>
+      <a href="{% url 'director_logout' %}" class="logout-btn">Logout</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>Manage Period Slot: {{ period_slot.name }}</h1>
+
+    <form method="POST" action="{% url 'manage_periodSlot' period_slot.id %}">
+      {% csrf_token %}
+      <label for="name">Period Name:</label>
+      <input type="text" name="name" value="{{ period_slot.name }}" required />
+
+      <label for="start_time">Start Time:</label>
+      <input type="time" name="start_time" value="{{ period_slot.start_time|time:'H:i' }}" required />
+
+      <label for="end_time">End Time:</label>
+      <input type="time" name="end_time" value="{{ period_slot.end_time|time:'H:i' }}" required />
+
+      <button type="submit" class="button save">Save Changes</button>
+    </form>
+
+    <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: space-between;">
+      <a href="{% url 'delete_periodSlot' period_slot.id %}"
+         class="button delete"
+         onclick="return confirm('Are you sure you want to delete this period slot?');">
+         Delete Period Slot
+      </a>
+      <a href="{% url 'create_periodSlots_form' %}" class="button back">← Back to Period Slots</a>
+    </div>
+
+    <div class="messages">
+      {% if messages %}
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <footer>
+    &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+  </footer>
+
+</body>
+</html>

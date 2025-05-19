@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manage Class Schedule</title>
+  <style>
+    :root {
+      --primary-color: #007bff;
+      --danger-color: #dc3545;
+      --secondary-color: #2c3e50;
+      --light-bg: #f4f6f9;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-bg);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .logout-btn {
+      background-color: var(--danger-color);
+      padding: 8px 15px;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .logout-btn:hover {
+      background-color: #c62828;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 800px;
+      margin: 30px auto;
+      background: var(--white);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--secondary-color);
+    }
+
+    .section {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      background-color: #fdfdfd;
+    }
+
+    .section h2 {
+      margin-bottom: 15px;
+      font-size: 20px;
+      color: var(--primary-color);
+    }
+
+    .section p {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    select, input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+    }
+
+    .btn {
+      margin-top: 10px;
+      padding: 12px;
+      font-weight: bold;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      font-size: 16px;
+    }
+
+    .btn.save {
+      background-color: var(--primary-color);
+    }
+
+    .btn.save:hover {
+      background-color: #0056b3;
+    }
+
+    .btn.delete {
+      background-color: var(--danger-color);
+    }
+
+    .btn.delete:hover {
+      background-color: #c82333;
+    }
+
+    .btn.back {
+      background-color: #6c757d;
+      text-decoration: none;
+      text-align: center;
+      display: inline-block;
+    }
+
+    .btn.back:hover {
+      background-color: #5a6268;
+    }
+
+    .buttons-row {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .messages {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .messages p {
+      color: red;
+      font-weight: bold;
+    }
+
+    footer {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 14px;
+      margin-top: auto;
+    }
+
+    @media (min-width: 600px) {
+      .buttons-row {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div><p><strong>Welcome, {{ director.admin_name }}</strong></p></div>
+    <div>
+      <a href="{% url 'director_dashboard' %}" style="background-color: rgb(97, 129, 216); color: white; padding: 6px 15px; border-radius: 5px;">Dashboard</a>
+      <a href="{% url 'director_logout' %}" class="logout-btn">Logout</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>Manage Class Schedule</h1>
+
+    <!-- Existing Schedule -->
+    <div class="section">
+      <h2>Existing Schedule</h2>
+      <p><strong>Active Semester:</strong> {{ schedule.active_semester2 }}</p>
+      <p><strong>Day:</strong> {{ schedule.day2 }}</p>
+      <p><strong>Period:</strong> {{ schedule.period2 }}</p>
+      <p><strong>Subject:</strong> {% if schedule.subject2 %}{{ schedule.subject2.subject.name }}{% else %}-- None --{% endif %}</p>
+      <p><strong>Teacher:</strong> {% if schedule.teacher2 %}{{ schedule.teacher2.teacher_name }}{% else %}-- None --{% endif %}</p>
+    </div>
+
+    <!-- Update Schedule Form -->
+    <div class="section">
+      <h2>Update Schedule</h2>
+      <form method="POST" action="{% url 'manage_classSchedule' schedule.id %}">
+    {% csrf_token %}
+
+  <!-- Active Semester -->
+
+    <label>Update Active Semester:</label>
+    <select name="active_semester" required>
+      {% for sem in active_semesters %}
+        <option value="{{ sem.id }}" {% if schedule.active_semester.id == sem.id %}selected{% endif %}>
+          {{ sem.class_group.branch.branch_name }} - {{ sem.class_group.batch.batch_name }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <!-- Day -->
+    <label>Update Day:</label>
+    <select name="day" required>
+      {% for d in days %}
+        <option value="{{ d.id }}" {% if schedule.day.id == d.id %}selected{% endif %}>{{ d.name }}</option>
+      {% endfor %}
+    </select>
+
+    <!-- Period -->
+    <label>Update Period:</label>
+    <select name="period" required>
+      {% for p in periods %}
+        <option value="{{ p.id }}" {% if schedule.period.id == p.id %}selected{% endif %}>
+          {{ p.name }} ({{ p.start_time }} - {{ p.end_time }})
+        </option>
+      {% endfor %}
+    </select>
+
+    <!-- Subject -->
+
+    <label>Update Subject (Optional):</label>
+    <select name="subject">
+      <option value="">-- None --</option>
+      {% for s in subjects %}
+        <option value="{{ s.id }}" {% if schedule.subject and schedule.subject.id == s.id %}selected{% endif %}>
+          {{ s.subject.name }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <!-- Teacher -->
+
+    <label>Update Teacher (Optional):</label>
+    <select name="teacher">
+      <option value="">-- None --</option>
+      {% for t in teachers %}
+        <option value="{{ t.id }}" {% if schedule.teacher and schedule.teacher.id == t.id %}selected{% endif %}>
+          {{ t.teacher_name }}
+        </option>
+      {% endfor %}
+    </select>
+
+     <button type="submit" class="btn save">💾 Save Changes</button>
+</form>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="buttons-row">
+      <a href="{% url 'delete_classSchedule' schedule.id %}"
+         class="btn delete"
+         onclick="return confirm('Are you sure you want to delete this class schedule?');">
+         🗑️ Delete Class Schedule
+      </a>
+      <a href="{% url 'create_classSchedule_form' %}" class="btn back">← Back to Class Schedules</a>
+    </div>
+
+    <div class="messages">
+      {% if messages %}
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <footer>
+    &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+  </footer>
+
+</body>
+</html>
