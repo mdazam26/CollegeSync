@@ -217,7 +217,7 @@
           <a href="{% url 'create_periodSlots_form' %}" title="Create Period">+ Create</a>
         </div>
 
-        <label>Subject (Optional):</label>
+        <!-- <label>Subject (Optional):</label>
         <div class="inline-row">
           <select name="subject">
             <option value="">-- None --</option>
@@ -226,9 +226,9 @@
             {% endfor %}
           </select>
           <a href="{% url 'create_subject_form' %}" title="Create Subject">+ Create</a>
-        </div>
+        </div> -->
 
-        <label>Teacher (Optional):</label>
+        <!-- <label>Teacher (Optional):</label>
         <div class="inline-row">
           <select name="teacher">
             <option value="">-- None --</option>
@@ -237,7 +237,7 @@
             {% endfor %}
           </select>
           <a href="{% url 'create_teacher_form' %}" title="Create Teacher">+ Create</a>
-        </div>
+        </div> -->
 
         <button type="submit">Create Schedule</button>
       </form>
@@ -246,46 +246,44 @@
     <!-- Right Panel: View Existing Schedules -->
     <div class="panel">
       <h2>Existing Schedules</h2>
-      {% if class_schedules2 %}
-        <table>
-          <thead>
-            <tr>
-              <th>S.No</th>
-              <th>Semester</th>
-              <th>Day</th>
-              <th>Period</th>
-              <th>Subject</th>
-              <th>Teacher</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for sched in class_schedules2 %}
-              <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>
-                  {% if sched.active_semester2 and sched.active_semester2.class_group %}
-                    {{ sched.active_semester2.class_group.branch.branch_name }} -
-                    {{ sched.active_semester2.class_group.batch.batch_name }}
-                  {% else %}
-                    No Semester
-                  {% endif %}
-                </td>
-                <td>{{ sched.day2.name }}</td>
-                <td>{{ sched.period2.name }}</td>
-                <td>{{ sched.subject2 }}</td>
-                <td>{{ sched.teacher2 }}</td>
-                <td>
-                  <a href="{% url 'goto_manage_classSchedule' sched.id %}" class="manage-btn">Manage</a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% else %}
-        <p>No schedules found.</p>
-      {% endif %}
+{% if grouped_schedules %}
+  {% for active_semester, schedules in grouped_schedules %}
+    <h3 style="margin-top: 20px; color: #007bff;">
+      {{ active_semester.class_group.branch.branch_name }} -
+      {{ active_semester.class_group.batch.batch_name }}
+    </h3>
+    <table>
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Day</th>
+          <th>Period</th>
+          <th>Subject</th>
+          <th>Teacher</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sched in schedules %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ sched.day2.name }}</td>
+            <td>{{ sched.period2.name }}</td>
+            <td>{{ sched.subject2 }}</td>
+            <td>{{ sched.teacher2 }}</td>
+            <td>
+              <a href="{% url 'goto_manage_classSchedule' sched.id %}" class="manage-btn">Manage</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endfor %}
+{% else %}
+  <p>No schedules found.</p>
+{% endif %}
     </div>
+
   </div>
 
   <footer>

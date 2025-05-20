@@ -8,6 +8,7 @@ from schedule.models import ClassSchedule2, ClassSchedule
 from semester.models import ActiveClassSemester, SemesterSubject, SemesterTemplate, Subject, BranchSemester 
 from director.models import Teacher
 from django.db.models import ProtectedError
+from collections import defaultdict
 
 # Create your views here.
 def index(request):
@@ -35,6 +36,12 @@ def create_periodSlots_form(request):
     })
 
 def create_periodSlot(request):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        messages.error(request, "Please log in again.")
+        return redirect('open_director_login')
+
+    director = get_object_or_404(College, id=director_id)
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
         start_time = request.POST.get('start_time')
@@ -85,6 +92,12 @@ def goto_manage_periodSlot(request, period_id):
     })
 
 def manage_periodSlot(request, period_id):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        messages.error(request, "Please log in again.")
+        return redirect('open_director_login')
+
+    director = get_object_or_404(College, id=director_id)
     period = get_object_or_404(PeriodSlot, id=period_id)
 
     if request.method == 'POST':
@@ -114,6 +127,12 @@ def manage_periodSlot(request, period_id):
     return render(request, 'schedule/periodslot/goto_manage_periodSlots.html', {'period_slot': period})
 
 def delete_periodSlot(request, period_id):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        messages.error(request, "Please log in again.")
+        return redirect('open_director_login')
+
+    director = get_object_or_404(College, id=director_id)
     period = get_object_or_404(PeriodSlot, id=period_id)
 
     try:
@@ -141,17 +160,25 @@ def create_classSchedule_form(request):
     director = get_object_or_404(College, id=director_id)
 
     class_schedules2 = ClassSchedule2.objects.select_related(
-        'active_semester2', 'day2', 'period2', 'subject2', 'teacher2'
+        'active_semester2', 'day2', 'period2', 'subject2', 'teacher2',
+        'active_semester2__class_group__branch',
+        'active_semester2__class_group__batch'
     ).order_by('day2__id', 'period2__start_time')
 
-
-    print(f"class_schedules type: {type(class_schedules2)}")
-   
-
+    print(f"class_schedules type: {type(class_schedules2)}")   
     print(f"Count: {class_schedules2.count()}")
     print(f"class_schedules count: {class_schedules2.count()}")
 
-    active_semesters = ActiveClassSemester.objects.all()
+    grouped_schedules = defaultdict(list)
+    for sched in class_schedules2:
+        grouped_schedules[sched.active_semester2].append(sched)
+
+    active_semesters = ActiveClassSemester.objects.select_related(
+        'class_group__branch', 'class_group__batch'
+    ).all()
+
+    # active_semesters = ActiveClassSemester.objects.all()
+
     periods = PeriodSlot.objects.all().order_by('start_time')
     days = Day.objects.all()
     subjects = SemesterSubject.objects.all()
@@ -159,6 +186,7 @@ def create_classSchedule_form(request):
 
     return render(request, 'schedule/create_classSchedule_form.html', {
         'director': director,
+        'grouped_schedules': grouped_schedules.items(),
         'class_schedules2': class_schedules2,
         'active_semesters': active_semesters,
         'periods': periods,
@@ -168,6 +196,12 @@ def create_classSchedule_form(request):
     })
 
 def create_classSchedule(request):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        messages.error(request, "Please log in again.")
+        return redirect('open_director_login')
+
+    director = get_object_or_404(College, id=director_id)
     if request.method == 'POST':
             active_semester_id = request.POST.get('active_semester')
             day_id = request.POST.get('day')
@@ -244,6 +278,13 @@ def goto_manage_classSchedule(request, schedule_id):
     })
 
 def manage_classSchedule(request, schedule_id):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        messages.error(request, "Please log in again.")
+        return redirect('open_director_login')
+
+    director = get_object_or_404(College, id=director_id)
+
     schedule = get_object_or_404(ClassSchedule2, id=schedule_id)
 
     # Dropdown data for rendering
@@ -325,9 +366,16 @@ def manage_classSchedule(request, schedule_id):
         'periods': periods,
         'subjects': subjects,
         'teachers': teachers,
+        'director': director
     })
 
 def delete_classSchedule(request, schedule_id):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        messages.error(request, "Please log in again.")
+        return redirect('open_director_login')
+
+    director = get_object_or_404(College, id=director_id)
     schedule = get_object_or_404(ClassSchedule2, id=schedule_id)
 
     try:

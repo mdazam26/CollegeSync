@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Schedule</title>
+</head>
+<body>
+    <h2>📚 Class Schedule - {{ teacher.teacher_name }}</h2>
+
+   <table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Day</th>
+            {% for period in all_periods %}
+                <th>{{ period }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for day in all_days %}
+            <tr>
+                <td><strong>{{ day.name }}</strong></td>
+                {% for period in all_periods %}
+                    <td>
+                        {% with found=False %}
+                            {% for key, item in timetable.items %}
+                                {% if key.0 == day.name and key.1 == period %}
+                                    {{ item.subject2.subject.name }}<br>
+                                    {{ item.active_semester2 }}<br>
+                                    <a href="{% url 'take_class' item.id %}">
+                                        <button>Start Class</button>
+                                    </a>
+                                    {% with found=True %}{% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if not found %}
+                                Free Period
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- <h2>Take Attendance - {{ subject.subject.name }} | {{ active_class }}</h2>
+<form method="post">
+    {% csrf_token %}
+    <label>Date:</label>
+    <input type="date" name="date" value="{{ today }}"><br><br>
+
+    <table border="1">
+        <tr>
+            <th>Student Name</th>
+            <th>Status</th>
+        </tr>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.student_name }}</td>
+            <td>
+                <label><input type="radio" name="status_{{ student.id }}" value="present" required> Present</label>
+                <label><input type="radio" name="status_{{ student.id }}" value="absent"> Absent</label>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br><button type="submit">Submit Attendance</button>
+</form> -->
+
+
+<h1>class</h1>
+
+
+<!-- templates/teacher/take_class.html -->
+<h2>Take Attendance</h2>
+
+<p><strong>Subject:</strong> {{ subject.name }}</p>
+<p><strong>Teacher:</strong> {{ teacher.teacher_name }}</p>
+<p><strong>Day:</strong> {{ day }}</p>
+
+<form method="post" action="{% url 'mark_attendance' schedule.id %}">
+    {% csrf_token %}
+    
+    <label for="date">Select Date:</label>
+    <input type="date" name="date" required>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Enrollment No</th>
+                <th>Student Name</th>
+                <th>Present?</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.student_enrollment_number }}</td>
+                <td>{{ student.student_name }}</td>
+                <td>
+                    <input type="checkbox" name="present_students" value="{{ student.id }}">
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="submit">Submit Attendance</button>
+</form>
+
+
+
+</body>
+</html>

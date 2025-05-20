@@ -1,90 +1,308 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Manage Schedule</title>
+  <meta charset="UTF-8" />
+  <title>Manage Schedule</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    :root {
+      --primary-color: #1e88e5;
+      --secondary-color: #0d47a1;
+      --light-bg: #f1f6fc;
+      --card-bg: #ffffff;
+      --danger-color: #d32f2f;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-bg);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .header-left {
+      font-size: 16px;
+    }
+
+    .header-center h2 {
+      margin: 0;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 10px;
+    }
+
+    .header-right a {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .header-right a:hover {
+      background-color: #1565c0;
+    }
+
+    .logout-button {
+      background-color: var(--danger-color) !important;
+    }
+
+    .logout-button:hover {
+      background-color: #b71c1c !important;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--light-bg);
+    }
+
+    .form-group {
+      margin: 20px 0;
+    }
+
+    select, button {
+      padding: 8px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button[type="submit"] {
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #1565c0;
+    }
+
+    footer {
+      background-color: var(--secondary-color);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .message-list {
+      list-style: none;
+      margin: 10px 0;
+      padding: 0;
+      color: var(--danger-color);
+    }
+  </style>
 </head>
 <body>
-    <h1>Schedule Management</h1>
 
-    <div class="container mt-4">
-        <h2>Manage Class Schedule</h2>
+<header>
+  <div class="header-left">
+    <strong>Welcome, {{ teacher.teacher_name }}</strong>
+  </div>
 
-        <!-- Active Semester Dropdown -->
-        <div class="form-group">
-            <label for="active_semester">Select Active Semester:</label>
-            <select name="active_semester" id="active_semester" class="form-control" required>
-                <option value="">-- Choose Semester --</option>
-                {% for semester in active_semesters %}
-                    <option value="{{ semester.id }}" {% if semester.id|stringformat:"s" == selected_active_id %}selected{% endif %}>
-                        {{ semester }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+  <div class="header-center">
+    <h2>Schedule Management</h2>
+  </div>
 
-        <script>
-            document.getElementById('active_semester').addEventListener('change', function () {
-                const selectedId = this.value;
-                if (selectedId) {
-                    window.location.href = '?active_semester=' + selectedId;
-                }
-            });
-        </script>
+  <div class="header-right">
+    <a href="{% url 'teacher_dashboard' %}">Dashboard</a>
+    <a href="{% url 'professor_logout' %}" class="logout-button">Logout</a>
+  </div>
+</header>
 
-        {% if selected_active %}
-           <form method="post" action="{% url 'create_schedule' %}">
-    {% csrf_token %}
-    <table class="table table-bordered mt-4">
+<div class="container">
+
+  {% if messages %}
+    <ul class="message-list">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <h3>Manage Class Schedule</h3>
+
+  <!-- Active Semester Dropdown -->
+  <div class="form-group">
+    <label for="active_semester">Select Active Semester:</label>
+    <select name="active_semester" id="active_semester" required>
+      <option value="">-- Choose Semester --</option>
+      {% for semester in active_semesters %}
+        <option value="{{ semester.id }}" {% if semester.id|stringformat:"s" == selected_active_id %}selected{% endif %}>
+          {{ semester }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <script>
+    document.getElementById('active_semester').addEventListener('change', function () {
+      const selectedId = this.value;
+      if (selectedId) {
+        window.location.href = '?active_semester=' + selectedId;
+      }
+    });
+  </script>
+
+  {% if selected_active %}
+    <form method="post" action="{% url 'create_schedule' %}">
+      {% csrf_token %}
+      <input type="hidden" name="active_semester" value="{{ selected_active.id }}">
+
+      <table>
         <thead>
-            <tr>
-                <th>Day</th>
-                <th>Period</th>
-                <th>Subject</th>
-                <th>Teacher</th>
-            </tr>
+          <tr>
+            <th>Day</th>
+            <th>Period</th>
+            <th>Subject</th>
+            <th>Teacher</th>
+          </tr>
         </thead>
         <tbody>
-            {% for item in schedule_slots %}
-                {% with slot=item.slot %}
-                <tr>
-                    <td>{{ slot.day2.name }}</td>
-                    <td>{{ slot.period2.name }}</td>
-
-                    <td>
-                        <select name="subject_{{ slot.id }}" class="form-control">
-                            <option value="">-- Select Subject --</option>
-                            {% for subj in semester_subjects %}
-                                <option value="{{ subj.id }}" {% if slot.subject2 and slot.subject2.id == subj.id %}selected{% endif %}>
-                                    {{ subj }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </td>
-
-                    <td>
-                        <select name="teacher_{{ slot.id }}" class="form-control">
-                            <option value="">-- Select Teacher --</option>
-                            {% for t in item.available_teachers %}
-                                <option value="{{ t.id }}" {% if slot.teacher2 and slot.teacher2.id == t.id %}selected{% endif %}>
-                                    {{ t.teacher_name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                </tr>
-                {% endwith %}
-            {% empty %}
-                <tr>
-                    <td colspan="4">No schedule slots found for this semester.</td>
-                </tr>
-            {% endfor %}
+          {% for item in schedule_slots %}
+            {% with slot=item.slot %}
+              <tr>
+                <td>{{ slot.day2.name }}</td>
+                <td>{{ slot.period2.name }}</td>
+                <td>
+                  <select name="subject_{{ slot.id }}">
+                    <option value="">-- Select Subject --</option>
+                    {% for subj in semester_subjects %}
+                      <option value="{{ subj.id }}" {% if slot.subject2 and slot.subject2.id == subj.id %}selected{% endif %}>
+                        {{ subj }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td>
+                  <select name="teacher_{{ slot.id }}">
+                    <option value="">-- Select Teacher --</option>
+                    {% for t in item.available_teachers %}
+                      <option value="{{ t.id }}" {% if slot.teacher2 and slot.teacher2.id == t.id %}selected{% endif %}>
+                        {{ t.teacher_name }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </td>
+              </tr>
+            {% endwith %}
+          {% empty %}
+            <tr>
+              <td colspan="4">No schedule slots found for this semester.</td>
+            </tr>
+          {% endfor %}
         </tbody>
-    </table>
+      </table>
 
-    <button type="submit" class="btn btn-success">Save Schedule</button>
-</form>
-        {% endif %}
-    </div>
+      <button type="submit">Save Schedule</button>
+    </form>
+  {% endif %}
+
+  {% if grouped_schedules %}
+  {% for semester, schedules in grouped_schedules %}
+    <h3 style="text-align: center;">SCHEDULE OF</h3>
+    <h3 class="mt-5">{{ branch.branch_name }} - {{ semester }}</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Period</th>
+          <th>Semester</th>
+          <th>Subject</th>
+          <th>Teacher</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for schedule in schedules %}
+          <tr>
+            <td>{{ schedule.day2.name }}</td>
+            <td>{{ schedule.period2.name }}</td>
+            <td>{{ schedule.active_semester2 }}</td>
+            <td>
+              {% if schedule.subject2 and schedule.subject2.subject %}
+                {{ schedule.subject2.subject.name }}
+              {% else %}
+                Not Assigned
+              {% endif %}
+            </td>
+            <td>
+              {% if schedule.teacher2 %}
+                {{ schedule.teacher2.teacher_name }}
+              {% else %}
+                Not Assigned
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'goto_manage_schedule' schedule.id %}" class="btn btn-primary btn-sm">Manage</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endfor %}
+{% else %}
+  <p>No schedules found.</p>
+{% endif %}
+</div>
+
+<footer>
+  &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+</footer>
+
 </body>
 </html>
