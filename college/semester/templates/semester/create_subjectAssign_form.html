@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assign Subject to Semester | College Sync</title>
+  <style>
+    :root {
+      --primary: #007bff;
+      --secondary: #2c3e50;
+      --danger: #dc3545;
+      --bg: #f4f6f9;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--secondary);
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .header-left a,
+    .header-right a {
+      background-color: var(--primary);
+      color: white;
+      padding: 8px 14px;
+      text-decoration: none;
+      border-radius: 6px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+
+    .header-right a.logout {
+      background-color: var(--danger);
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      padding: 30px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .panel {
+      flex: 1 1 450px;
+      background-color: var(--white);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: var(--secondary);
+      font-size: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background-color: var(--primary);
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #e0e0e0;
+    }
+
+    .messages {
+      margin: 20px auto;
+      padding: 15px;
+      background: #ffe6e6;
+      border-left: 5px solid var(--danger);
+      color: var(--danger);
+      width: 80%;
+      border-radius: 6px;
+    }
+
+    footer {
+      background-color: var(--secondary);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      margin-top: auto;
+    }
+
+    .manage-link {
+      background-color: var(--secondary);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+
+    .manage-link:hover {
+      background-color: #1c2e3f;
+    }
+
+    fieldset {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    legend {
+      padding: 0 10px;
+      font-weight: bold;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <a href="{% url 'director_dashboard' %}">Dashboard</a>
+    </div>
+    <div><strong>Welcome, {{ director.admin_name }}</strong></div>
+    <div class="header-right">
+      <a href="{% url 'goto_semester' %}">Back</a>
+      <a href="{% url 'director_logout' %}" class="logout">Logout</a>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="container">
+    <!-- Subject Assignment Form -->
+    <div class="panel">
+      <h2>🧩 Assign Subject to Semester</h2>
+      <form method="POST" action="{% url 'create_subjectAssign' %}">
+        {% csrf_token %}
+
+        <fieldset>
+          <legend>Subject Details</legend>
+
+          <label>
+            <input type="radio" name="subject_option" value="existing" checked onclick="toggleSubjectFields()"> Select Existing Subject
+          </label>
+          <label style="margin-left: 15px;">
+            <input type="radio" name="subject_option" value="new" onclick="toggleSubjectFields()"> Create New Subject
+          </label>
+
+          <!-- Existing Subject -->
+     
+        <div id="existing_subject_section" style="margin-top: 15px;">
+          <label for="subject_search">Search and Select Subject:</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input list="subject_list" id="subject_search" name="subject_search" placeholder="Type subject code or name" 
+                  oninput="updateSubjectId()" class="search-input" autocomplete="off" />
+
+            <button type="button" onclick="resetSubjectSelection()" style="padding: 8px 10px; background-color: #ccc; color: #333; border: none; border-radius: 6px; cursor: pointer;">
+              Clear
+            </button>
+          </div>
+
+          <datalist id="subject_list">
+            {% for sub in subjects %}
+              <option data-id="{{ sub.id }}" value="{{ sub.code }} - {{ sub.name }}"></option>
+            {% endfor %}
+          </datalist>
+
+          <input type="hidden" name="subject_id" id="subject_id" required>
+
+          <p id="selected_subject_display" style="margin-top: 10px; color: green; font-weight: bold; display: none;"></p>
+        </div>
+
+
+          <!-- New Subject -->
+          <div id="new_subject_section" style="display:none; margin-top: 15px;">
+            <label for="new_name">Subject Name:</label>
+            <input type="text" name="new_name" id="new_name">
+
+            <label for="new_code">Subject Code:</label>
+            <input type="text" name="new_code" id="new_code">
+
+            <label for="new_credit">Credits:</label>
+            <input type="number" name="new_credit" id="new_credit" min="0">
+
+            <label for="new_modules">Modules:</label>
+            <input type="number" name="new_modules" id="new_modules" min="1">
+          </div>
+        </fieldset>
+
+        <label for="branch_semester">Select Branch Semester:</label>
+        <select name="branch_semester_id" required>
+          <option value="">-- Select Branch Semester --</option>
+          {% for bs in branch_semesters %}
+            <option value="{{ bs.id }}">{{ bs.branch.branch_name }} - {{ bs.semester_template.semester_name }}</option>
+          {% endfor %}
+        </select>
+
+        <button type="submit">➕ Assign Subject</button>
+      </form>
+    </div>
+
+    <!-- List of Assigned Subjects -->
+   <div class="panel">
+    <h2>📋 Assigned Semester Subjects</h2>
+
+    <!-- BranchSemester Dropdown -->
+    <div style="margin-bottom: 15px;">
+      <label for="branch_semester_select"><strong>Filter by Branch Semester:</strong></label>
+      <select id="branch_semester_select" onchange="filterSubjects()" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc; width: 100%; max-width: 400px;">
+        <option value="">-- All Branch Semesters --</option>
+        {% for bs in branch_semesters %}
+          <option value="{{ bs.id }}">{{ bs.branch.branch_name }} - {{ bs.semester_template.semester_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    {% if semester_subjects %}
+      <table id="subject_table" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background-color: #f2f2f2;">
+            <th style="padding: 10px; border: 1px solid #ddd;">S. No</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Branch</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Semester</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Subject</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ss in semester_subjects %}
+            <tr data-branch-semester-id="{{ ss.branch_semester.id }}">
+              <td style="padding: 10px; border: 1px solid #ddd;">{{ forloop.counter }}</td>
+              <td style="padding: 10px; border: 1px solid #ddd;">{{ ss.branch_semester.branch.branch_name }}</td>
+              <td style="padding: 10px; border: 1px solid #ddd;">{{ ss.branch_semester.semester_template.semester_name }}</td>
+              <td style="padding: 10px; border: 1px solid #ddd;">{{ ss.subject.code }} - {{ ss.subject.name }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No semester subject mappings found.</p>
+    {% endif %}
+  </div>
+
+  </div>
+
+  <footer>
+    &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+  </footer>
+
+  <!-- JS to toggle subject creation/selection -->
+  <script>
+    function toggleSubjectFields() {
+      const selectedOption = document.querySelector('input[name="subject_option"]:checked').value;
+      const existingSection = document.getElementById('existing_subject_section');
+      const newSection = document.getElementById('new_subject_section');
+
+      if (selectedOption === 'existing') {
+        existingSection.style.display = 'block';
+        newSection.style.display = 'none';
+      } else {
+        existingSection.style.display = 'none';
+        newSection.style.display = 'block';
+      }
+    }
+
+
+     function updateSubjectId() {
+      const input = document.getElementById('subject_search');
+      const hiddenInput = document.getElementById('subject_id');
+      const datalist = document.getElementById('subject_list');
+      const options = datalist.options;
+      const display = document.getElementById('selected_subject_display');
+
+      let selectedId = '';
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value === input.value) {
+          selectedId = options[i].dataset.id;
+          break;
+        }
+      }
+
+      if (selectedId) {
+        hiddenInput.value = selectedId;
+        display.textContent = `✔ Selected: ${input.value}`;
+        display.style.display = 'block';
+      } else {
+        hiddenInput.value = '';
+        display.textContent = '';
+        display.style.display = 'none';
+      }
+  }
+
+      function resetSubjectSelection() {
+        document.getElementById('subject_search').value = '';
+        document.getElementById('subject_id').value = '';
+        document.getElementById('selected_subject_display').textContent = '';
+        document.getElementById('selected_subject_display').style.display = 'none';
+      }
+
+      function filterSubjects() {
+      const selectedId = document.getElementById("branch_semester_select").value;
+      const rows = document.querySelectorAll("#subject_table tbody tr");
+
+      rows.forEach(row => {
+        const rowId = row.getAttribute("data-branch-semester-id");
+        row.style.display = (selectedId === "" || selectedId === rowId) ? "" : "none";
+      });
+    }
+  </script>
+</body>
+</html>

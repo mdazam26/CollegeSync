@@ -300,6 +300,89 @@ def create_activeClassSemester_form(request):
     })
 
 
+def create_subjectAssign_form(request):
+    director_id = request.session.get('director_id')
+    if not director_id:
+        messages.error(request, "Please log in again.")
+        return redirect('open_director_login')
+
+    director = get_object_or_404(College, id=director_id)
+
+    branch_semesters = BranchSemester.objects.select_related('branch', 'semester_template')
+    subjects = Subject.objects.all().order_by('name')
+    semester_subjects = SemesterSubject.objects.select_related('branch_semester__branch', 'branch_semester__semester_template', 'subject')
+
+    return render(request, 'semester/create_subjectAssign_form.html', {
+        'director': director,
+        'branch_semesters': branch_semesters,
+        'subjects': subjects,
+        'semester_subjects': semester_subjects,
+    })
+
+def create_subjectAssign(request):
+    if request.method == 'POST':
+        branch_semester_id = request.POST.get('branch_semester_id')
+        subject_option = request.POST.get('subject_option')  # either "existing" or "new"
+
+        if not branch_semester_id:
+            messages.error(request, "Please select a Branch Semester.")
+            return redirect('create_subjectAssign_form')
+
+        # Fetch the BranchSemester object
+        branch_semester = get_object_or_404(BranchSemester, id=branch_semester_id)
+
+        # If existing subject selected
+        if subject_option == 'existing':
+            subject_id = request.POST.get('subject_id')
+
+            if not subject_id:
+                messages.error(request, "Please select an existing subject.")
+                return redirect('create_subjectAssign_form')
+
+            subject = get_object_or_404(Subject, id=subject_id)
+
+        # If creating a new subject
+        elif subject_option == 'new':
+            new_name = request.POST.get('new_name')
+            new_code = request.POST.get('new_code')
+            new_credit = request.POST.get('new_credit')
+            new_modules = request.POST.get('new_modules')
+
+            if not all([new_name, new_code, new_credit, new_modules]):
+                messages.error(request, "Please fill in all fields for the new subject.")
+                return redirect('create_subjectAssign_form')
+
+            # Check for duplicate subject code
+            if Subject.objects.filter(code=new_code).exists():
+                messages.error(request, "Subject code already exists. Use a different code.")
+                return redirect('create_subjectAssign_form')
+
+            # Create the new subject
+            subject = Subject.objects.create(
+                name=new_name,
+                code=new_code,
+                credit=new_credit,
+                modules=new_modules
+            )
+
+        else:
+            messages.error(request, "Invalid subject selection option.")
+            return redirect('create_subjectAssign_form')
+
+        # Now assign the subject to the branch semester
+        if SemesterSubject.objects.filter(branch_semester=branch_semester, subject=subject).exists():
+            messages.warning(request, "This subject is already assigned to the selected branch semester.")
+            return redirect('create_subjectAssign_form')
+
+        SemesterSubject.objects.create(branch_semester=branch_semester, subject=subject)
+        messages.success(request, f"Subject '{subject.name}' assigned to '{branch_semester}' successfully.")
+        return redirect('create_subjectAssign_form')
+
+    return redirect('create_subjectAssign_form')
+
+
+
+
 def create_activeClassSemester(request):
     if request.method == 'POST':
         class_group_id = request.POST.get('class_group_id')

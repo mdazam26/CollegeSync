@@ -24,6 +24,8 @@ urlpatterns = [
     path('create_semesterSubject_form/', views.create_semesterSubject_form, name='create_semesterSubject_form'),
     path('create_semesterSubject/', views.create_semesterSubject, name='create_semesterSubject'),
 
+    path('create_subjectAssign_form/', views.create_subjectAssign_form, name='create_subjectAssign_form'),
+    path('create_subjectAssign', views.create_subjectAssign, name='create_subjectAssign'),
 
     path('create_activeClassSemester_form/', views.create_activeClassSemester_form, name='create_activeClassSemester_form'),
     path('create_activeClassSemester/', views.create_activeClassSemester, name='create_activeClassSemester'),

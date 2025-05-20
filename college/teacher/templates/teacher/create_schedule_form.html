@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Schedule</title>
+</head>
+<body>
+    <h1>Schedule Management</h1>
+
+    <div class="container mt-4">
+        <h2>Manage Class Schedule</h2>
+
+        <!-- Active Semester Dropdown -->
+        <div class="form-group">
+            <label for="active_semester">Select Active Semester:</label>
+            <select name="active_semester" id="active_semester" class="form-control" required>
+                <option value="">-- Choose Semester --</option>
+                {% for semester in active_semesters %}
+                    <option value="{{ semester.id }}" {% if semester.id|stringformat:"s" == selected_active_id %}selected{% endif %}>
+                        {{ semester }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <script>
+            document.getElementById('active_semester').addEventListener('change', function () {
+                const selectedId = this.value;
+                if (selectedId) {
+                    window.location.href = '?active_semester=' + selectedId;
+                }
+            });
+        </script>
+
+        {% if selected_active %}
+           <form method="post" action="{% url 'create_schedule' %}">
+    {% csrf_token %}
+    <table class="table table-bordered mt-4">
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Period</th>
+                <th>Subject</th>
+                <th>Teacher</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in schedule_slots %}
+                {% with slot=item.slot %}
+                <tr>
+                    <td>{{ slot.day2.name }}</td>
+                    <td>{{ slot.period2.name }}</td>
+
+                    <td>
+                        <select name="subject_{{ slot.id }}" class="form-control">
+                            <option value="">-- Select Subject --</option>
+                            {% for subj in semester_subjects %}
+                                <option value="{{ subj.id }}" {% if slot.subject2 and slot.subject2.id == subj.id %}selected{% endif %}>
+                                    {{ subj }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <td>
+                        <select name="teacher_{{ slot.id }}" class="form-control">
+                            <option value="">-- Select Teacher --</option>
+                            {% for t in item.available_teachers %}
+                                <option value="{{ t.id }}" {% if slot.teacher2 and slot.teacher2.id == t.id %}selected{% endif %}>
+                                    {{ t.teacher_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                {% endwith %}
+            {% empty %}
+                <tr>
+                    <td colspan="4">No schedule slots found for this semester.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-success">Save Schedule</button>
+</form>
+        {% endif %}
+    </div>
+</body>
+</html>

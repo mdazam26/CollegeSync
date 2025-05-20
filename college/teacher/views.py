@@ -4,6 +4,11 @@ from django.contrib import messages
 from director.models import Teacher, ClassGroup, Batch, Branch
 from student.models import Student
 from django.contrib.auth.hashers import check_password
+from semester.models import ActiveClassSemester
+from django.contrib.auth.decorators import login_required
+from schedule.models import ClassSchedule2
+from semester.models import SemesterSubject
+from django.db.models import Q
 
 # Create your views here.
 
@@ -79,3 +84,67 @@ def view_branch_students(request):
         'classgroups': classgroups,
         'selected_classgroup_id': selected_classgroup_id,
     })
+
+
+def create_schedule_form(request):
+    teacher_id = request.session.get('teacher_id')
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+
+    if not teacher.is_hod:
+        messages.error(request, "Unauthorized access.")
+        return redirect('teacher_dashboard')
+
+    branch = Branch.objects.filter(branch_hod=teacher).first()
+    active_semesters = ActiveClassSemester.objects.filter(branch_semester__branch=branch)
+
+    selected_active_id = request.GET.get('active_semester')
+    selected_active = None
+    schedule_slots = []
+    semester_subjects = []
+    
+    if selected_active_id:
+        selected_active = get_object_or_404(
+            ActiveClassSemester,
+            id=selected_active_id,
+            branch_semester__branch=branch
+        )
+
+        all_teachers = set(Teacher.objects.all())
+
+        raw_slots = ClassSchedule2.objects.filter(
+            active_semester2=selected_active
+        ).order_by('day2', 'period2')
+
+        schedule_slots = []
+        for slot in raw_slots:
+            busy_teacher_ids = ClassSchedule2.objects.filter(
+                day2=slot.day2,
+                period2=slot.period2
+            ).exclude(id=slot.id).values_list('teacher2_id', flat=True)
+
+            busy_teachers = set(Teacher.objects.filter(id__in=busy_teacher_ids))
+            available_teachers = all_teachers - busy_teachers
+
+            schedule_slots.append({
+                'slot': slot,  # The ClassSchedule2 instance
+                'available_teachers': available_teachers
+            })
+
+        semester_subjects = SemesterSubject.objects.filter(
+            branch_semester=selected_active.branch_semester
+        )
+
+    context = {
+        'teacher': teacher,
+        'branch': branch,
+        'active_semesters': active_semesters,
+        'selected_active_id': selected_active_id,
+        'selected_active': selected_active,
+        'schedule_slots': schedule_slots,  # list of dicts with 'slot' and 'available_teachers'
+        'semester_subjects': semester_subjects,
+    }
+    return render(request, 'teacher/create_schedule_form.html', context)
+
+
+def create_schedule(request):
+    return HttpResponse("create schedule")

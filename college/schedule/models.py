@@ -49,4 +49,15 @@ class ClassSchedule2(models.Model):
     class Meta:
         unique_together = ('active_semester2', 'day2', 'period2')
 
-   
+    def is_teacher_available(self):
+        if not self.teacher2 or not self.day2 or not self.period2:
+            return False  # Incomplete info
+
+        # Look for any other schedule at the same time with the same teacher
+        conflict = ClassSchedule2.objects.filter(
+            teacher2=self.teacher2,
+            day2=self.day2,
+            period2=self.period2
+        ).exclude(id=self.id).exists()
+
+        return not conflict

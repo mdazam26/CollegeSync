@@ -7,6 +7,7 @@ from tenants.models import TenantDomain
 from django.contrib import messages
 from .models import Student, StudentClass
 from datetime import datetime, date
+from django.db.models import Q  
 
 
 def index(request):
@@ -120,11 +121,19 @@ def view_student(request):
         messages.error(request, "Director not found")
         return redirect('open_director_login')
 
-    all_students = Student.objects.all().order_by('student_enrollment_number')
+    search_query = request.GET.get('search_enrollment', '')
+
+    if search_query:
+        all_students = Student.objects.filter(
+            Q(student_enrollment_number__icontains=search_query)
+        ).order_by('student_enrollment_number')
+    else:
+        all_students = Student.objects.all().order_by('student_enrollment_number')
 
     return render(request, 'student/view_student.html', {
         'director': director,
         'students': all_students,
+        'search_query': search_query,
     })
 
 def goto_manage_student(request, student_id):
@@ -322,7 +331,7 @@ def classgroup_create_student_form(request):
     director_id = request.session.get('director_id')
     if not director_id:
         messages.error(request, 'Session expired or director not logged in.')
-        return redirect('opem_director_login')
+        return redirect('open_director_login')
 
     director = get_object_or_404(College, id=director_id)
 
