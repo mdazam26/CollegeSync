@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib import messages
+from datetime import datetime
 from director.models import Teacher, ClassGroup, Batch, Branch
 from student.models import Student
 from django.contrib.auth.hashers import check_password
@@ -13,6 +14,11 @@ from collections import defaultdict
 from .models import AttendanceRecord
 from datetime import date
 from student.models import StudentClass
+from openpyxl import Workbook
+
+from django.template.loader import get_template
+# from weasyprint import pisa  
+from io import BytesIO
 
 
 
@@ -373,13 +379,243 @@ def take_class(request, schedule_id):
         'subject': schedule.subject2.subject,
         'teacher': schedule.teacher2,
         'active_class_semester': active_class_semester,
+        'class_group': class_group,  # ✅ ADDED THIS LINE
         'students': students,
         'day': schedule.day2.name,
-        # Optional: pass today if you want it as a default
         'today': date.today().isoformat(),
     }
 
     return render(request, 'teacher/take_class.html', context)
 
 def mark_attendance(request, schedule_id):
-    return HttpResponse('save attendance')
+    if request.method != 'POST':
+        return HttpResponseBadRequest("Invalid request method.")
+
+    # Get the schedule and related objects
+    schedule = get_object_or_404(ClassSchedule2.objects.select_related(
+        'active_semester2__class_group',
+        'subject2__subject',
+        'teacher2',
+        'day2'
+    ), id=schedule_id)
+
+    active_class_semester = schedule.active_semester2
+    class_group = active_class_semester.class_group
+
+    # Get all students in the class group
+    student_classes = StudentClass.objects.select_related('student').filter(
+        class_group=class_group
+    ).order_by('student__student_enrollment_number')
+    students = [sc.student for sc in student_classes]
+
+    # Get date from POST and validate it
+    selected_date_str = request.POST.get('date')
+    try:
+        selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
+    except (ValueError, TypeError):
+        return HttpResponseBadRequest("Invalid date format. Please use YYYY-MM-DD.")
+
+    # Get list of present student IDs from the checkboxes
+    present_ids = request.POST.getlist('present_students')
+
+    for student in students:
+        status = "present" if str(student.id) in present_ids else "absent"
+
+        AttendanceRecord.objects.update_or_create(
+            student=student,
+            active_class_semester=active_class_semester,
+            subject=schedule.subject2,
+            teacher=schedule.teacher2,
+            date=selected_date,
+            defaults={'status': status}
+        )
+
+    return render(request, 'teacher/attendance_success.html', {
+        'date': selected_date,
+        'subject': schedule.subject2.subject,
+        'class_group': class_group,
+        'teacher': schedule.teacher2,
+        'schedule_id': schedule.id,
+        'active_class_semester': active_class_semester,
+    })
+
+
+
+def view_attendance(request):
+    teacher_id = request.session.get('teacher_id')
+    if not teacher_id:
+        return redirect('some_error_page')  # You can redirect to a fallback
+
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+
+    schedules = ClassSchedule2.objects.filter(
+        teacher2=teacher
+    ).order_by('active_semester2', 'subject2').distinct('active_semester2', 'subject2')
+
+    selected_schedule_id = request.GET.get('schedule_id')
+    selected_schedule = None
+    attendance_data = []
+
+    if selected_schedule_id:
+        selected_schedule = ClassSchedule2.objects.get(id=selected_schedule_id)
+        active_class = selected_schedule.active_semester2
+        subject = selected_schedule.subject2
+
+        # Get all students in this active semester
+        students = StudentClass.objects.filter(
+            class_group=active_class.class_group
+        ).select_related('student').order_by('student__student_enrollment_number')
+
+        for student_class in students:
+            student = student_class.student
+            total_classes = AttendanceRecord.objects.filter(
+                active_class_semester=active_class,
+                subject=subject,
+                teacher=teacher,
+                student=student
+            ).count()
+
+            present_days = AttendanceRecord.objects.filter(
+                active_class_semester=active_class,
+                subject=subject,
+                teacher=teacher,
+                student=student,
+                status='present'
+            ).count()
+
+            absent_days = AttendanceRecord.objects.filter(
+                active_class_semester=active_class,
+                subject=subject,
+                teacher=teacher,
+                student=student,
+                status='absent'
+            ).count()
+
+            attendance_data.append({
+                'student': student,
+                'total_classes': total_classes,
+                'present': present_days,
+                'absent': absent_days,
+            })
+
+    context = {
+        'schedules': schedules,
+        'selected_schedule': selected_schedule,
+        'attendance_data': attendance_data,
+    }
+
+    return render(request, 'teacher/view_attendance.html', context)
+
+
+def export_pdf(request):
+    pass
+    # teacher_id = request.session.get('teacher_id')
+    # if not teacher_id:
+    #     return redirect('some_error_page')
+
+    # teacher = get_object_or_404(Teacher, id=teacher_id)
+    # schedule_id = request.GET.get('schedule_id')
+    # selected_schedule = get_object_or_404(ClassSchedule2, id=schedule_id, teacher2=teacher)
+    # active_class = selected_schedule.active_semester2
+    # subject = selected_schedule.subject2
+
+    # students = StudentClass.objects.filter(class_group=active_class.class_group).select_related('student').order_by('student__student_enrollment_number')
+
+    # attendance_data = []
+    # for student_class in students:
+    #     student = student_class.student
+    #     total_classes = AttendanceRecord.objects.filter(
+    #         active_class_semester=active_class,
+    #         subject=subject,
+    #         teacher=teacher,
+    #         student=student
+    #     ).count()
+    #     present = AttendanceRecord.objects.filter(
+    #         active_class_semester=active_class,
+    #         subject=subject,
+    #         teacher=teacher,
+    #         student=student,
+    #         status='present'
+    #     ).count()
+    #     absent = AttendanceRecord.objects.filter(
+    #         active_class_semester=active_class,
+    #         subject=subject,
+    #         teacher=teacher,
+    #         student=student,
+    #         status='absent'
+    #     ).count()
+    #     attendance_data.append({
+    #         'student': student,
+    #         'total_classes': total_classes,
+    #         'present': present,
+    #         'absent': absent,
+    #     })
+
+    # context = {
+    #     'selected_schedule': selected_schedule,
+    #     'attendance_data': attendance_data,
+    # }
+
+    # template = get_template('teacher/attendance_pdf_template.html')
+    # html = template.render(context)
+    # response = HttpResponse(content_type='application/pdf')
+    # response['Content-Disposition'] = 'attachment; filename="attendance_report.pdf"'
+
+    # pisa.CreatePDF(html, dest=response)  # If using xhtml2pdf
+    # return response
+
+def export_excel(request):
+    teacher_id = request.session.get('teacher_id')
+    if not teacher_id:
+        return redirect('some_error_page')
+
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+    schedule_id = request.GET.get('schedule_id')
+    selected_schedule = get_object_or_404(ClassSchedule2, id=schedule_id, teacher2=teacher)
+    active_class = selected_schedule.active_semester2
+    subject = selected_schedule.subject2
+
+    students = StudentClass.objects.filter(class_group=active_class.class_group).select_related('student').order_by('student__student_enrollment_number')
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Attendance Report"
+
+    ws.append(["Student Name", "Enrollment", "Total", "Present", "Absent"])
+
+    for student_class in students:
+        student = student_class.student
+        total_classes = AttendanceRecord.objects.filter(
+            active_class_semester=active_class,
+            subject=subject,
+            teacher=teacher,
+            student=student
+        ).count()
+        present = AttendanceRecord.objects.filter(
+            active_class_semester=active_class,
+            subject=subject,
+            teacher=teacher,
+            student=student,
+            status='present'
+        ).count()
+        absent = AttendanceRecord.objects.filter(
+            active_class_semester=active_class,
+            subject=subject,
+            teacher=teacher,
+            student=student,
+            status='absent'
+        ).count()
+
+        ws.append([
+            student.student_name,
+            student.student_enrollment_number,
+            total_classes,
+            present,
+            absent,
+        ])
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    filename = "attendance_report.xlsx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    wb.save(response)
+    return response

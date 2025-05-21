@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Attendance</h1>
+
+    <h2>Select Schedule</h2>
+<form method="get">
+    <select name="schedule_id" onchange="this.form.submit()">
+        <option value="">Select</option>
+        {% for schedule in schedules %}
+            <option value="{{ schedule.id }}" {% if schedule.id == selected_schedule.id %}selected{% endif %}>
+                {{ schedule.active_semester2.class_group }} - {{ schedule.subject2 }}
+            </option>
+        {% endfor %}
+    </select>
+</form>
+
+{% if selected_schedule %}
+    <h3>Attendance for {{ selected_schedule.subject2 }} - {{ selected_schedule.active_semester2.class_group }}</h3>
+
+    <table border="1">
+        <tr>
+            <th>Student</th>
+            <th>Enrollment</th>
+            <th>Total Classes</th>
+            <th>Present</th>
+            <th>Absent</th>
+        </tr>
+        {% for record in attendance_data %}
+            <tr>
+                <td>{{ record.student.student_name }}</td>
+                <td>{{ record.student.student_enrollment_number }}</td>
+                <td>{{ record.total_classes }}</td>
+                <td>{{ record.present }}</td>
+                <td>{{ record.absent }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% if selected_schedule %}
+    <form method="get" action="{% url 'export_excel' %}">
+        <input type="hidden" name="schedule_id" value="{{ selected_schedule.id }}">
+        <button type="submit">Download Excel</button>
+    </form>
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Attendance Success</title>
+  <style>
+    :root {
+      --primary-color: #1e88e5;
+      --secondary-color: #0d47a1;
+      --light-bg: #f1f6fc;
+      --card-bg: #ffffff;
+      --danger-color: #d32f2f;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-bg);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .header-left {
+      font-size: 16px;
+    }
+
+    .header-center h2 {
+      margin: 0;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 10px;
+    }
+
+    .header-right a {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .header-right a:hover {
+      background-color: #1565c0;
+    }
+
+    .logout-button {
+      background-color: var(--danger-color) !important;
+    }
+
+    .logout-button:hover {
+      background-color: #b71c1c !important;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 30px auto 80px;
+      padding: 30px;
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: var(--secondary-color);
+      text-align: center;
+    }
+
+    p {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .buttons-row {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      background-color: var(--primary-color);
+      padding: 10px 18px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #1565c0;
+    }
+
+    .btn-danger {
+      background-color: var(--danger-color);
+    }
+
+    .btn-danger:hover {
+      background-color: #b71c1c;
+    }
+
+    .btn-secondary {
+      background-color: #777;
+    }
+
+    .btn-secondary:hover {
+      background-color: #555;
+    }
+
+    footer {
+      background-color: var(--secondary-color);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <strong>Welcome, {{ teacher.teacher_name }}</strong>
+  </div>
+
+  <div class="header-center">
+    <h2>Attendance Saved</h2>
+  </div>
+
+  <div class="header-right">
+    <a href="{% url 'teacher_dashboard' %}">Dashboard</a>
+    <a href="{% url 'teacher_schedule_view' %}">Schedules</a>
+    <a href="{% url 'professor_logout' %}" class="logout-button">Logout</a>
+  </div>
+</header>
+
+<div class="container">
+  <h2>✅ Attendance Saved Successfully!</h2>
+
+  <p><strong>Date:</strong> {{ date }}</p>
+  <p><strong>Subject:</strong> {{ subject.name }}</p>
+  <p><strong>Teacher:</strong> {{ teacher.teacher_name }}</p>
+  <p><strong>Active Semester:</strong> {{ active_class_semester }}</p>
+
+  <div class="buttons-row">
+    <a href="{% url 'view_attendance' %}" class="btn btn-secondary">📄 View Attendance</a>
+    <a href="{% url 'take_class' schedule_id %}" class="btn">← Back to Attendance</a>
+  </div>
+</div>
+
+<footer>
+  &copy; {{ now|date:"Y" }} College Sync. All rights reserved.
+</footer>
+
+</body>
+</html>

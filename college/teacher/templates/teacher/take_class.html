@@ -6,30 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-    <!-- <h2>Take Attendance - {{ subject.subject.name }} | {{ active_class }}</h2>
-<form method="post">
-    {% csrf_token %}
-    <label>Date:</label>
-    <input type="date" name="date" value="{{ today }}"><br><br>
 
-    <table border="1">
-        <tr>
-            <th>Student Name</th>
-            <th>Status</th>
-        </tr>
-        {% for student in students %}
-        <tr>
-            <td>{{ student.student_name }}</td>
-            <td>
-                <label><input type="radio" name="status_{{ student.id }}" value="present" required> Present</label>
-                <label><input type="radio" name="status_{{ student.id }}" value="absent"> Absent</label>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    <br><button type="submit">Submit Attendance</button>
-</form> -->
 
 
 <h1>class</h1>
@@ -41,6 +18,8 @@
 <p><strong>Subject:</strong> {{ subject.name }}</p>
 <p><strong>Teacher:</strong> {{ teacher.teacher_name }}</p>
 <p><strong>Day:</strong> {{ day }}</p>
+<p><strong>Active Semester:</strong> {{ active_class_semester }}</p>
+
 
 <form method="post" action="{% url 'mark_attendance' schedule.id %}">
     {% csrf_token %}
@@ -72,7 +51,13 @@
     <button type="submit">Submit Attendance</button>
 </form>
 
-
+ {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+    <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
 
 </body>
 </html>

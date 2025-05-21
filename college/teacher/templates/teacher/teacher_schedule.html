@@ -16,6 +16,9 @@
             {% endfor %}
         </tr>
     </thead>
+
+
+
     <tbody>
         {% for day in all_days %}
             <tr>
@@ -28,21 +31,29 @@
                                     {{ item.subject2.subject.name }}<br>
                                     {{ item.active_semester2 }}<br>
                                     <a href="{% url 'take_class' item.id %}">
-                                        <button>Start Class</button>
+                                    <button>Start Class</button>
                                     </a>
                                     {% with found=True %}{% endwith %}
                                 {% endif %}
+                                
                             {% endfor %}
-                            {% if not found %}
-                                Free Period
-                            {% endif %}
                         {% endwith %}
                     </td>
                 {% endfor %}
             </tr>
         {% endfor %}
     </tbody>
-</table>
 
+
+
+
+</table>
+ {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+    <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
 </body>
 </html>
